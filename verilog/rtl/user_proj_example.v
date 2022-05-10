@@ -68,98 +68,155 @@ module user_proj_example #(
     // IRQ
     output [2:0] irq
 );
-    wire clk;
-    wire rst;
 
     wire [`MPRJ_IO_PADS-1:0] io_in;
     wire [`MPRJ_IO_PADS-1:0] io_out;
     wire [`MPRJ_IO_PADS-1:0] io_oeb;
 
-    wire [31:0] rdata; 
-    wire [31:0] wdata;
-    wire [BITS-1:0] count;
+    logic                                                   io_clk;
+    logic                                                   io_rst_n;
+    logic                                                   clkmux_clk;
+    logic                                                   rstmux_rst_n;
+    logic                                                   wbs_mode;
+    logic                                                   wbs_debug;
+    logic                                                   wbs_qp_mem_csb0;
+    logic                                                   wbs_qp_mem_web0;
+    logic [8:0]                                             wbs_qp_mem_addr0;
+    logic [55:0]                                            wbs_qp_mem_wpatch0;
+    logic [55:0]                                            wbs_qp_mem_rpatch0;
+    logic [7:0]                                             wbs_leaf_mem_csb0;
+    logic [7:0]                                             wbs_leaf_mem_web0;
+    logic [5:0]                                             wbs_leaf_mem_addr0;
+    logic [63:0]                                            wbs_leaf_mem_wleaf0;
+    logic [63:0]                                            wbs_leaf_mem_rleaf0 [LEAF_SIZE-1:0];
 
-    wire valid;
-    wire [3:0] wstrb;
-    wire [31:0] la_write;
+    logic                                                   fsm_start;
+    logic                                                   fsm_done;
+    logic                                                   send_best_arr;
+    logic                                                   load_kdtree;
+    logic                                                   in_fifo_wenq;
+    logic [10:0]                                            in_fifo_wdata;
+    logic                                                   in_fifo_wfull_n;
+    logic                                                   out_fifo_deq;
+    logic [10:0]                                            out_fifo_rdata;
+    logic                                                   out_fifo_rempty_n;
 
-    // WB MI A
-    assign valid = wbs_cyc_i && wbs_stb_i; 
-    assign wstrb = wbs_sel_i & {4{wbs_we_i}};
-    assign wbs_dat_o = rdata;
-    assign wdata = wbs_dat_i;
-
-    // IO
-    assign io_out = count;
-    assign io_oeb = {(`MPRJ_IO_PADS-1){rst}};
 
     // IRQ
     assign irq = 3'b000;	// Unused
+    assign la_data_out = 128'd0;  // Unused
+    assign io_oeb = la_data_in[37:0];  // TODO
 
-    // LA
-    assign la_data_out = {{(127-BITS){1'b0}}, count};
-    // Assuming LA probes [63:32] are for controlling the count register  
-    assign la_write = ~la_oenb[63:32] & ~{BITS{valid}};
-    // Assuming LA probes [65:64] are for controlling the count clk & reset  
-    assign clk = (~la_oenb[64]) ? la_data_in[64]: wb_clk_i;
-    assign rst = (~la_oenb[65]) ? la_data_in[65]: wb_rst_i;
+    // define all IO pin locations
+    assign io_clk = io_in[0];
+    assign io_rst_n = io_in[1];
+    assign in_fifo_wenq = io_in[2];
+    assign in_fifo_wdata = io_in[13:3];
+    assign out_fifo_deq = io_in[14];
+    assign fsm_start = io_in[15];
+    assign send_best_arr = io_in[16];
+    assign load_kdtree = io_in[17];
+    assign io_out[18] = in_fifo_wfull_n;
+    assign io_out[29:19] = out_fifo_rdata;
+    assign io_out[30] = out_fifo_rempty_n;
+    assign io_out[31] = fsm_done;
+    assign io_out[17:0] = '0;
+    assign io_out[37:32] = '0;
 
-    counter #(
-        .BITS(BITS)
-    ) counter(
-        .clk(clk),
-        .reset(rst),
-        .ready(wbs_ack_o),
-        .valid(valid),
-        .rdata(rdata),
-        .wdata(wbs_dat_i),
-        .wstrb(wstrb),
-        .la_write(la_write),
-        .la_input(la_data_in[63:32]),
-        .count(count)
+
+    ClockMux clockmux_inst (
+        .select  ( wbs_mode  ),
+        .clk0    ( wb_clk_i  ),
+        .clk1    ( io_clk    ),
+        .out_clk ( clkmux_clk)
+    );
+
+    ClockMux rstmux_inst (
+        .select  ( wbs_mode     ),
+        .clk0    ( ~wb_rst_i    ),
+        .clk1    ( io_rst_n     ),
+        .out_clk ( rstmux_rst_n )
+    );
+
+    wbsCtrl #(
+        .DATA_WIDTH                             (DATA_WIDTH),
+        .LEAF_SIZE                              (LEAF_SIZE),
+        .PATCH_SIZE                             (PATCH_SIZE),
+        .ROW_SIZE                               (ROW_SIZE),
+        .COL_SIZE                               (COL_SIZE),
+        .K                                      (K),
+        .NUM_LEAVES                             (NUM_LEAVES)
+    ) wbsctrl_inst (
+        .wb_clk_i                               (wb_clk_i),
+        .wb_rst_i                               (wb_rst_i),
+        .wbs_stb_i                              (wbs_stb_i),
+        .wbs_cyc_i                              (wbs_cyc_i),
+        .wbs_we_i                               (wbs_we_i),
+        .wbs_sel_i                              (wbs_sel_i),
+        .wbs_dat_i                              (wbs_dat_i),
+        .wbs_adr_i                              (wbs_adr_i),
+        .wbs_ack_o                              (wbs_ack_o),
+        .wbs_dat_o                              (wbs_dat_o),
+        .wbs_mode                               (wbs_mode),
+        .wbs_debug                              (wbs_debug),
+        .wbs_qp_mem_csb0                        (wbs_qp_mem_csb0),
+        .wbs_qp_mem_web0                        (wbs_qp_mem_web0),
+        .wbs_qp_mem_addr0                       (wbs_qp_mem_addr0),
+        .wbs_qp_mem_wpatch0                     (wbs_qp_mem_wpatch0),
+        .wbs_qp_mem_rpatch0                     (wbs_qp_mem_rpatch0),
+        .wbs_leaf_mem_csb0                      (wbs_leaf_mem_csb0),
+        .wbs_leaf_mem_web0                      (wbs_leaf_mem_web0),
+        .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
+        .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
+        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0)
+    );
+
+    top 
+    // #(
+    //     .DATA_WIDTH(DATA_WIDTH),
+    //     .DIST_WIDTH(DIST_WIDTH),
+    //     .IDX_WIDTH(IDX_WIDTH),
+    //     .LEAF_SIZE(LEAF_SIZE),
+    //     .PATCH_SIZE(PATCH_SIZE),
+    //     .ROW_SIZE(ROW_SIZE),
+    //     .COL_SIZE(COL_SIZE),
+    //     .NUM_QUERYS(NUM_QUERYS),
+    //     .K(K),
+    //     .NUM_LEAVES(NUM_LEAVES),
+    //     .BLOCKING(BLOCKING),
+    //     .LEAF_ADDRW(LEAF_ADDRW)
+    // ) 
+    dut(
+        .clk(clkmux_clk),
+        .rst_n(rstmux_rst_n),
+
+        .load_kdtree(load_kdtree),
+        .fsm_start(fsm_start),
+        .fsm_done(fsm_done),
+        .send_best_arr(send_best_arr),
+
+        .io_clk(io_clk),
+        .io_rst_n(io_rst_n),
+        .in_fifo_wenq(in_fifo_wenq),
+        .in_fifo_wdata(in_fifo_wdata),
+        .in_fifo_wfull_n(in_fifo_wfull_n),
+        .out_fifo_deq(out_fifo_deq),
+        .out_fifo_rdata(out_fifo_rdata),
+        .out_fifo_rempty_n(out_fifo_rempty_n),
+
+        .wbs_debug                              (wbs_debug),
+        .wbs_qp_mem_csb0                        (wbs_qp_mem_csb0),
+        .wbs_qp_mem_web0                        (wbs_qp_mem_web0),
+        .wbs_qp_mem_addr0                       (wbs_qp_mem_addr0),
+        .wbs_qp_mem_wpatch0                     (wbs_qp_mem_wpatch0),
+        .wbs_qp_mem_rpatch0                     (wbs_qp_mem_rpatch0),
+        .wbs_leaf_mem_csb0                      (wbs_leaf_mem_csb0),
+        .wbs_leaf_mem_web0                      (wbs_leaf_mem_web0),
+        .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
+        .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
+        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0)   
     );
 
 endmodule
 
-module counter #(
-    parameter BITS = 32
-)(
-    input clk,
-    input reset,
-    input valid,
-    input [3:0] wstrb,
-    input [BITS-1:0] wdata,
-    input [BITS-1:0] la_write,
-    input [BITS-1:0] la_input,
-    output ready,
-    output [BITS-1:0] rdata,
-    output [BITS-1:0] count
-);
-    reg ready;
-    reg [BITS-1:0] count;
-    reg [BITS-1:0] rdata;
-
-    always @(posedge clk) begin
-        if (reset) begin
-            count <= 0;
-            ready <= 0;
-        end else begin
-            ready <= 1'b0;
-            if (~|la_write) begin
-                count <= count + 1;
-            end
-            if (valid && !ready) begin
-                ready <= 1'b1;
-                rdata <= count;
-                if (wstrb[0]) count[7:0]   <= wdata[7:0];
-                if (wstrb[1]) count[15:8]  <= wdata[15:8];
-                if (wstrb[2]) count[23:16] <= wdata[23:16];
-                if (wstrb[3]) count[31:24] <= wdata[31:24];
-            end else if (|la_write) begin
-                count <= la_write & la_input;
-            end
-        end
-    end
-
-endmodule
 `default_nettype wire
