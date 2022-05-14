@@ -24,11 +24,12 @@
 		- Configures MPRJ lower 8-IO pins as outputs
 		- Checks counter value through the wishbone port
 */
-#define reg_mprj_cfg_mode       (*(volatile uint32_t*)0x30000000)
-#define reg_mprj_cfg_debug      (*(volatile uint32_t*)0x30000001)
-#define reg_mprj_cfg_query      (*(volatile uint32_t*)0x31000000)
-#define reg_mprj_cfg_leaf       (*(volatile uint32_t*)0x32000000)
-#define reg_mprj_cfg_best       (*(volatile uint32_t*)0x33000000)
+#define reg_mprj_cfg_mode                   (*(volatile uint32_t*)0x30000000)
+#define reg_mprj_cfg_debug                  (*(volatile uint32_t*)0x30000001)
+#define reg_mprj_cfg_done                   (*(volatile uint32_t*)0x30000002)
+#define reg_mprj_cfg_query                  ((volatile uint32_t*)0x31000000)
+#define reg_mprj_cfg_leaf                   ((volatile uint32_t*)0x32000000)
+#define reg_mprj_cfg_best                   ((volatile uint32_t*)0x33000000)
 
 
 void main()
@@ -114,12 +115,21 @@ void main()
 	reg_la2_data = 0x00000000;
 	reg_la3_data = 0x00000000;
 
-    reg_mprj_cfg_mode = 1;
     reg_mprj_cfg_debug = 1;
-    reg_mprj_cfg_query = 0x00000001;
-    reg_mprj_cfg_query = 0x00000000;
-    reg_mprj_cfg_query = 0x76543210;
-    reg_mprj_cfg_query = 0xdeadbeef;
+    reg_mprj_cfg_done = 1;
+    reg_mprj_cfg_mode = 1;
+    reg_mprj_cfg_query[0] = 0x00000001;
+    reg_mprj_cfg_query[0] = 0x00000000;
+    reg_mprj_cfg_query[0] = 0x76543210;
+    reg_mprj_cfg_query[0] = 0xdeadbeef;
+    reg_mprj_cfg_query[1] = 0x76543210;
+    reg_mprj_cfg_query[1] = 0xdeadbeef;
+
+    for (int i=0; i<494; i++){
+        reg_mprj_cfg_query[i] = i;
+        reg_mprj_cfg_query[i] = i;
+    }
+    reg_mprj_cfg_done = 1;
 
 
 }

@@ -73,33 +73,41 @@ module user_proj_example #(
     wire [`MPRJ_IO_PADS-1:0] io_out;
     wire [`MPRJ_IO_PADS-1:0] io_oeb;
 
-    logic                                                   io_clk;
-    logic                                                   io_rst_n;
-    logic                                                   clkmux_clk;
-    logic                                                   rstmux_rst_n;
-    logic                                                   wbs_mode;
-    logic                                                   wbs_debug;
-    logic                                                   wbs_qp_mem_csb0;
-    logic                                                   wbs_qp_mem_web0;
-    logic [8:0]                                             wbs_qp_mem_addr0;
-    logic [55:0]                                            wbs_qp_mem_wpatch0;
-    logic [55:0]                                            wbs_qp_mem_rpatch0;
-    logic [7:0]                                             wbs_leaf_mem_csb0;
-    logic [7:0]                                             wbs_leaf_mem_web0;
-    logic [5:0]                                             wbs_leaf_mem_addr0;
-    logic [63:0]                                            wbs_leaf_mem_wleaf0;
-    logic [63:0]                                            wbs_leaf_mem_rleaf0 [LEAF_SIZE-1:0];
+    wire                                                    io_clk;
+    wire                                                    io_rst_n;
+    wire                                                    clkmux_clk;
+    wire                                                    rstmux_rst_n;
+    wire                                                    wbs_mode;
+    wire                                                    wbs_debug;
+    wire                                                    wbs_done;
+    wire                                                    wbs_qp_mem_csb0;
+    wire                                                    wbs_qp_mem_web0;
+    wire [8:0]                                              wbs_qp_mem_addr0;
+    wire [54:0]                                             wbs_qp_mem_wpatch0;
+    wire [54:0]                                             wbs_qp_mem_rpatch0;
+    wire [7:0]                                              wbs_leaf_mem_csb0;
+    wire [7:0]                                              wbs_leaf_mem_web0;
+    wire [5:0]                                              wbs_leaf_mem_addr0;
+    wire [63:0]                                             wbs_leaf_mem_wleaf0;
+    wire [63:0][7:0]                                        wbs_leaf_mem_rleaf0;
+    wire                                                    wbs_best_arr_csb1;
+    wire [7:0]                                              wbs_best_arr_addr1;
+    wire [63:0]                                             wbs_best_arr_rdata1;
+    wire                                                    wbs_node_mem_web;
+    wire [31:0]                                             wbs_node_mem_addr;
+    wire [31:0]                                             wbs_node_mem_wdata;
+    wire [31:0]                                             wbs_node_mem_rdata;
 
-    logic                                                   fsm_start;
-    logic                                                   fsm_done;
-    logic                                                   send_best_arr;
-    logic                                                   load_kdtree;
-    logic                                                   in_fifo_wenq;
-    logic [10:0]                                            in_fifo_wdata;
-    logic                                                   in_fifo_wfull_n;
-    logic                                                   out_fifo_deq;
-    logic [10:0]                                            out_fifo_rdata;
-    logic                                                   out_fifo_rempty_n;
+    wire                                                    fsm_start;
+    wire                                                    fsm_done;
+    wire                                                    send_best_arr;
+    wire                                                    load_kdtree;
+    wire                                                    in_fifo_wenq;
+    wire [10:0]                                             in_fifo_wdata;
+    wire                                                    in_fifo_wfull_n;
+    wire                                                    out_fifo_deq;
+    wire [10:0]                                             out_fifo_rdata;
+    wire                                                    out_fifo_rempty_n;
 
 
     // IRQ
@@ -120,33 +128,36 @@ module user_proj_example #(
     assign io_out[29:19] = out_fifo_rdata;
     assign io_out[30] = out_fifo_rempty_n;
     assign io_out[31] = fsm_done;
-    assign io_out[17:0] = '0;
-    assign io_out[37:32] = '0;
+    assign io_out[32] = wbs_done;
+    assign io_out[17:0] = 18'd0;
+    assign io_out[37:33] = 5'd0;
 
 
     ClockMux clockmux_inst (
         .select  ( wbs_mode  ),
-        .clk0    ( wb_clk_i  ),
-        .clk1    ( io_clk    ),
+        .clk0    ( io_clk    ),
+        .clk1    ( wb_clk_i  ),
         .out_clk ( clkmux_clk)
     );
 
-    ClockMux rstmux_inst (
+    ResetMux resetmux_inst (
         .select  ( wbs_mode     ),
-        .clk0    ( ~wb_rst_i    ),
-        .clk1    ( io_rst_n     ),
-        .out_clk ( rstmux_rst_n )
+        .rst0    ( io_rst_n     ),
+        .rst1    ( ~wb_rst_i    ),
+        .out_rst ( rstmux_rst_n )
     );
 
-    wbsCtrl #(
-        .DATA_WIDTH                             (DATA_WIDTH),
-        .LEAF_SIZE                              (LEAF_SIZE),
-        .PATCH_SIZE                             (PATCH_SIZE),
-        .ROW_SIZE                               (ROW_SIZE),
-        .COL_SIZE                               (COL_SIZE),
-        .K                                      (K),
-        .NUM_LEAVES                             (NUM_LEAVES)
-    ) wbsctrl_inst (
+    wbsCtrl 
+    // #(
+    //     .DATA_WIDTH                             (DATA_WIDTH),
+    //     .LEAF_SIZE                              (LEAF_SIZE),
+    //     .PATCH_SIZE                             (PATCH_SIZE),
+    //     .ROW_SIZE                               (ROW_SIZE),
+    //     .COL_SIZE                               (COL_SIZE),
+    //     .K                                      (K),
+    //     .NUM_LEAVES                             (NUM_LEAVES)
+    // ) 
+    wbsctrl_inst (
         .wb_clk_i                               (wb_clk_i),
         .wb_rst_i                               (wb_rst_i),
         .wbs_stb_i                              (wbs_stb_i),
@@ -159,6 +170,7 @@ module user_proj_example #(
         .wbs_dat_o                              (wbs_dat_o),
         .wbs_mode                               (wbs_mode),
         .wbs_debug                              (wbs_debug),
+        .wbs_done                               (wbs_done),
         .wbs_qp_mem_csb0                        (wbs_qp_mem_csb0),
         .wbs_qp_mem_web0                        (wbs_qp_mem_web0),
         .wbs_qp_mem_addr0                       (wbs_qp_mem_addr0),
@@ -168,7 +180,14 @@ module user_proj_example #(
         .wbs_leaf_mem_web0                      (wbs_leaf_mem_web0),
         .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
         .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
-        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0)
+        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0),
+        .wbs_node_mem_web                       (wbs_node_mem_web),
+        .wbs_node_mem_addr                      (wbs_node_mem_addr),
+        .wbs_node_mem_wdata                     (wbs_node_mem_wdata),
+        .wbs_node_mem_rdata                     (wbs_node_mem_rdata),
+        .wbs_best_arr_csb1                      (wbs_best_arr_csb1),
+        .wbs_best_arr_addr1                     (wbs_best_arr_addr1),
+        .wbs_best_arr_rdata1                    (wbs_best_arr_rdata1)
     );
 
     top 
@@ -214,7 +233,14 @@ module user_proj_example #(
         .wbs_leaf_mem_web0                      (wbs_leaf_mem_web0),
         .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
         .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
-        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0)   
+        .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0),
+        .wbs_node_mem_web                       (wbs_node_mem_web),
+        .wbs_node_mem_addr                      (wbs_node_mem_addr),
+        .wbs_node_mem_wdata                     (wbs_node_mem_wdata),
+        .wbs_node_mem_rdata                     (wbs_node_mem_rdata),
+        .wbs_best_arr_csb1                      (wbs_best_arr_csb1),
+        .wbs_best_arr_addr1                     (wbs_best_arr_addr1),
+        .wbs_best_arr_rdata1                    (wbs_best_arr_rdata1)
     );
 
 endmodule
