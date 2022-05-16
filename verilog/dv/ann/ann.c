@@ -25,11 +25,14 @@
 		- Checks counter value through the wishbone port
 */
 #define reg_mprj_cfg_mode                   (*(volatile uint32_t*)0x30000000)
-#define reg_mprj_cfg_debug                  (*(volatile uint32_t*)0x30000001)
-#define reg_mprj_cfg_done                   (*(volatile uint32_t*)0x30000002)
-#define reg_mprj_cfg_query                  ((volatile uint32_t*)0x31000000)
-#define reg_mprj_cfg_leaf                   ((volatile uint32_t*)0x32000000)
-#define reg_mprj_cfg_best                   ((volatile uint32_t*)0x33000000)
+#define reg_mprj_cfg_debug                  (*(volatile uint32_t*)0x30000004)
+#define reg_mprj_cfg_done                   (*(volatile uint32_t*)0x30000008)
+#define reg_mprj_cfg_fsm_start              (*(volatile uint32_t*)0x3000000C)
+#define reg_mprj_cfg_fsm_busy               (*(volatile uint32_t*)0x30000010)
+#define reg_mprj_cfg_query                  ((volatile uint32_t*)0x30010000)
+#define reg_mprj_cfg_leaf                   ((volatile uint32_t*)0x30020000)
+#define reg_mprj_cfg_best                   ((volatile uint32_t*)0x30030000)
+#define reg_mprj_cfg_node                   ((volatile uint32_t*)0x30040000)
 
 
 void main()
@@ -115,20 +118,61 @@ void main()
 	reg_la2_data = 0x00000000;
 	reg_la3_data = 0x00000000;
 
-    reg_mprj_cfg_debug = 1;
-    reg_mprj_cfg_done = 1;
+    // use wb clk and rst
     reg_mprj_cfg_mode = 1;
-    reg_mprj_cfg_query[0] = 0x00000001;
-    reg_mprj_cfg_query[0] = 0x00000000;
-    reg_mprj_cfg_query[0] = 0x76543210;
-    reg_mprj_cfg_query[0] = 0xdeadbeef;
-    reg_mprj_cfg_query[1] = 0x76543210;
-    reg_mprj_cfg_query[1] = 0xdeadbeef;
 
-    for (int i=0; i<494; i++){
-        reg_mprj_cfg_query[i] = i;
-        reg_mprj_cfg_query[i] = i;
+    // enable debug mode to load/store data
+    reg_mprj_cfg_debug = 1;
+
+    // query mem init
+    // num query
+    for (uint32_t i=0; i<1; i++){  // testing only
+    // for (uint32_t i=0; i<494; i++){
+        for (uint32_t j=0; j<2; j++){
+            reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
+        }
     }
+
+
+    // leaf mem init
+    // num leaf
+    for (uint32_t i=0; i<1; i++){  // testing only
+    // for (uint32_t i=0; i<63; i++){
+        // num patch
+        for (uint32_t j=0; j<8; j++){
+            for (uint32_t r=0; r<2; r++){
+                reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
+            }
+        }
+    }
+
+
+    // internal node init
+
+
+    // disable debug mode to release memory control
+    reg_mprj_cfg_debug = 0;
+
+    // start fsm
+    reg_mprj_cfg_fsm_start = 1;
+    while(reg_mprj_cfg_fsm_busy == 1);
+    reg_mprj_cfg_done = 1;
+
+
+    // enable debug mode to load/store data
+    reg_mprj_cfg_debug = 1;
+
+    // best array read back
+    // num query
+    for (uint32_t i=0; i<2; i++){  // testing only
+    // for (uint32_t i=0; i<494; i++){
+        for (uint32_t j=0; j<2; j++){
+            uint32_t data = reg_mprj_cfg_best[2 * i + j];
+        }
+    }
+
+
+    // tell ann_tb to stop
     reg_mprj_cfg_done = 1;
 
 

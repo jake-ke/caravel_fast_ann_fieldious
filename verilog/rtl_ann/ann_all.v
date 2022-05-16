@@ -3333,6 +3333,46 @@ module SyncFIFO (
 				$finish;
 	end
 endmodule
+module SyncPulse (
+	sCLK,
+	sRST,
+	dCLK,
+	sEN,
+	dPulse
+);
+	input sCLK;
+	input sRST;
+	input sEN;
+	input dCLK;
+	output wire dPulse;
+	reg sSyncReg;
+	reg dSyncReg1;
+	reg dSyncReg2;
+	reg dSyncPulse;
+	assign dPulse = dSyncReg2 != dSyncPulse;
+	always @(posedge sCLK or negedge sRST)
+		if (sRST == 1'b0)
+			sSyncReg <= 1'b0;
+		else if (sEN)
+			sSyncReg <= !sSyncReg;
+	always @(posedge dCLK or negedge sRST)
+		if (sRST == 1'b0) begin
+			dSyncReg1 <= 1'b0;
+			dSyncReg2 <= 1'b0;
+			dSyncPulse <= 1'b0;
+		end
+		else begin
+			dSyncReg1 <= sSyncReg;
+			dSyncReg2 <= dSyncReg1;
+			dSyncPulse <= dSyncReg2;
+		end
+	initial begin
+		sSyncReg = 1'b0;
+		dSyncReg1 = 1'b0;
+		dSyncReg2 = 1'b0;
+		dSyncPulse = 1'b0;
+	end
+endmodule
 module top (
 	clk,
 	rst_n,
@@ -3734,7 +3774,7 @@ module top (
 		if (~rst_n)
 			out_fifo_wdata_n11 <= 1'sb0;
 		else if (out_fifo_wdata_sel[1])
-			out_fifo_wdata_n11 <= (out_fifo_wdata_sel[0] ? best_arr_rdata1[51-:11] : best_arr_rdata1[19-:11]);
+			out_fifo_wdata_n11 <= (out_fifo_wdata_sel[0] ? best_arr_rdata1[62-:11] : best_arr_rdata1[30-:11]);
 	SyncFIFO #(
 		.dataWidth(DATA_WIDTH),
 		.depth(16),
@@ -3754,8 +3794,8 @@ module top (
 		case (out_fifo_wdata_sel)
 			3'd0: out_fifo_wdata = {2'b00, best_arr_rdata1[IDX_WIDTH - 1-:IDX_WIDTH]};
 			3'd1: out_fifo_wdata = {2'b00, best_arr_rdata1[(((32 + IDX_WIDTH) - 1) >= 32 ? (32 + IDX_WIDTH) - 1 : (((32 + IDX_WIDTH) - 1) + (((32 + IDX_WIDTH) - 1) >= 32 ? (32 + IDX_WIDTH) - 32 : 34 - (32 + IDX_WIDTH))) - 1)-:(((32 + IDX_WIDTH) - 1) >= 32 ? (32 + IDX_WIDTH) - 32 : 34 - (32 + IDX_WIDTH))]};
-			3'd2: out_fifo_wdata = best_arr_rdata1[30-:11];
-			3'd3: out_fifo_wdata = best_arr_rdata1[62-:11];
+			3'd2: out_fifo_wdata = best_arr_rdata1[19-:11];
+			3'd3: out_fifo_wdata = best_arr_rdata1[51-:11];
 			3'd4: out_fifo_wdata = out_fifo_wdata_n11;
 			default: out_fifo_wdata = {2'b00, best_arr_rdata1[IDX_WIDTH - 1-:IDX_WIDTH]};
 		endcase
@@ -4150,6 +4190,8 @@ module wbsCtrl (
 	wbs_mode,
 	wbs_debug,
 	wbs_done,
+	wbs_fsm_start,
+	wbs_fsm_done,
 	wbs_qp_mem_csb0,
 	wbs_qp_mem_web0,
 	wbs_qp_mem_addr0,
@@ -4191,6 +4233,8 @@ module wbsCtrl (
 	output reg wbs_mode;
 	output reg wbs_debug;
 	output reg wbs_done;
+	output reg wbs_fsm_start;
+	output wire wbs_fsm_done;
 	output reg wbs_qp_mem_csb0;
 	output reg wbs_qp_mem_web0;
 	output reg [$clog2(NUM_QUERYS) - 1:0] wbs_qp_mem_addr0;
@@ -4208,14 +4252,16 @@ module wbsCtrl (
 	output reg wbs_best_arr_csb1;
 	output reg [7:0] wbs_best_arr_addr1;
 	input wire [63:0] wbs_best_arr_rdata1;
-	localparam WBS_ADDR_MASK = 32'hff000000;
+	localparam WBS_ADDR_MASK = 32'hffff0000;
 	localparam WBS_MODE_ADDR = 32'h30000000;
-	localparam WBS_DEBUG_ADDR = 32'h30000001;
-	localparam WBS_DONE_ADDR = 32'h30000002;
-	localparam WBS_QUERY_ADDR = 32'h31000000;
-	localparam WBS_LEAF_ADDR = 32'h32000000;
-	localparam WBS_BEST_ADDR = 32'h33000000;
-	localparam WBS_NODE_ADDR = 32'h34000000;
+	localparam WBS_DEBUG_ADDR = 32'h30000004;
+	localparam WBS_DONE_ADDR = 32'h30000008;
+	localparam WBS_FSM_START_ADDR = 32'h3000000c;
+	localparam WBS_FSM_BUSY_ADDR = 32'h30000010;
+	localparam WBS_QUERY_ADDR = 32'h30010000;
+	localparam WBS_LEAF_ADDR = 32'h30020000;
+	localparam WBS_BEST_ADDR = 32'h30030000;
+	localparam WBS_NODE_ADDR = 32'h30040000;
 	(* fsm_encoding = "one_hot" *) reg [31:0] currState;
 	reg [31:0] nextState;
 	reg wbs_input_reg_en;
@@ -4231,6 +4277,7 @@ module wbsCtrl (
 	reg [31:0] wbs_dat_o_q;
 	reg [31:0] wbs_dat_o_d;
 	reg wbs_dat_o_d_valid;
+	reg wbs_fsm_busy;
 	assign wbs_valid = wbs_cyc_i & wbs_stb_i;
 	assign wbs_ack_o = wbs_ack_o_q;
 	assign wbs_dat_o = wbs_dat_o_q;
@@ -4274,12 +4321,12 @@ module wbsCtrl (
 				if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_QUERY_ADDR) begin
 					wbs_qp_mem_csb0 = 1'b0;
 					wbs_qp_mem_web0 = 1'b1;
-					wbs_qp_mem_addr0 = wbs_adr_i_q[$clog2(NUM_QUERYS):1];
+					wbs_qp_mem_addr0 = wbs_adr_i_q[3+:$clog2(NUM_QUERYS)];
 				end
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_LEAF_ADDR) begin
-					wbs_leaf_mem_csb0[wbs_adr_i_q[3:1]] = 1'b0;
-					wbs_leaf_mem_web0[wbs_adr_i_q[3:1]] = 1'b1;
-					wbs_leaf_mem_addr0 = wbs_adr_i_q[9:4];
+					wbs_leaf_mem_csb0[wbs_adr_i_q[5:3]] = 1'b0;
+					wbs_leaf_mem_web0[wbs_adr_i_q[5:3]] = 1'b1;
+					wbs_leaf_mem_addr0 = wbs_adr_i_q[11:6];
 				end
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR) begin
 					wbs_node_mem_web = 1'b0;
@@ -4287,7 +4334,7 @@ module wbsCtrl (
 				end
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_BEST_ADDR) begin
 					wbs_best_arr_csb1 = 1'b0;
-					wbs_best_arr_addr1 = wbs_adr_i_q[8:1];
+					wbs_best_arr_addr1 = wbs_adr_i_q[10:3];
 				end
 			end
 			32'd2: begin
@@ -4295,29 +4342,31 @@ module wbsCtrl (
 				wbs_ack_o_d = 1'b1;
 				wbs_dat_o_d_valid = 1'b1;
 				if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_QUERY_ADDR)
-					wbs_dat_o_d = (wbs_adr_i_q[0] ? {9'b000000000, wbs_qp_mem_rpatch0[54:32]} : wbs_qp_mem_rpatch0[31:0]);
+					wbs_dat_o_d = (wbs_adr_i_q[2] ? {9'b000000000, wbs_qp_mem_rpatch0[54:32]} : wbs_qp_mem_rpatch0[31:0]);
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_LEAF_ADDR)
-					wbs_dat_o_d = (wbs_adr_i_q[0] ? wbs_leaf_mem_rleaf0[(wbs_adr_i_q[3:1] * 64) + 63-:32] : wbs_leaf_mem_rleaf0[(wbs_adr_i_q[3:1] * 64) + 31-:32]);
+					wbs_dat_o_d = (wbs_adr_i_q[2] ? wbs_leaf_mem_rleaf0[(wbs_adr_i_q[5:3] * 64) + 63-:32] : wbs_leaf_mem_rleaf0[(wbs_adr_i_q[5:3] * 64) + 31-:32]);
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)
 					wbs_dat_o_d = wbs_node_mem_rdata;
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_BEST_ADDR)
-					wbs_dat_o_d = (wbs_adr_i_q[0] ? wbs_best_arr_rdata1[63:32] : wbs_best_arr_rdata1[31:0]);
+					wbs_dat_o_d = (wbs_adr_i_q[2] ? wbs_best_arr_rdata1[63:32] : wbs_best_arr_rdata1[31:0]);
+				else if (wbs_adr_i_q == WBS_FSM_BUSY_ADDR)
+					wbs_dat_o_d = {31'd0, wbs_fsm_busy};
 			end
 			32'd3: begin
 				nextState = 32'd0;
-				if ((wbs_we_i_q & wbs_adr_i_q[0]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_QUERY_ADDR)) begin
+				if ((wbs_we_i_q & wbs_adr_i_q[2]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_QUERY_ADDR)) begin
 					wbs_qp_mem_csb0 = 1'b0;
 					wbs_qp_mem_web0 = 1'b0;
-					wbs_qp_mem_addr0 = wbs_adr_i_q[$clog2(NUM_QUERYS):1];
+					wbs_qp_mem_addr0 = wbs_adr_i_q[3+:$clog2(NUM_QUERYS)];
 					wbs_qp_mem_wpatch0 = {wbs_dat_i_q, wbs_dat_i_lower_q};
 				end
-				else if ((wbs_we_i_q & wbs_adr_i_q[0]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_LEAF_ADDR)) begin
-					wbs_leaf_mem_csb0[wbs_adr_i_q[3:1]] = 1'b0;
-					wbs_leaf_mem_web0[wbs_adr_i_q[3:1]] = 1'b0;
-					wbs_leaf_mem_addr0 = wbs_adr_i_q[9:4];
+				else if ((wbs_we_i_q & wbs_adr_i_q[2]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_LEAF_ADDR)) begin
+					wbs_leaf_mem_csb0[wbs_adr_i_q[5:3]] = 1'b0;
+					wbs_leaf_mem_web0[wbs_adr_i_q[5:3]] = 1'b0;
+					wbs_leaf_mem_addr0 = wbs_adr_i_q[11:6];
 					wbs_leaf_mem_wleaf0 = {wbs_dat_i_q, wbs_dat_i_lower_q};
 				end
-				else if ((wbs_we_i_q & wbs_adr_i_q[0]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
+				else if ((wbs_we_i_q & wbs_adr_i_q[2]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
 					wbs_node_mem_web = 1'b1;
 					wbs_node_mem_wdata = wbs_dat_i_q;
 				end
@@ -4372,4 +4421,18 @@ module wbsCtrl (
 			wbs_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_DONE_ADDR))
 			wbs_done <= wbs_dat_i_q[0];
+	always @(posedge wb_clk_i or posedge wb_rst_i)
+		if (wb_rst_i)
+			wbs_fsm_start <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_FSM_START_ADDR))
+			wbs_fsm_start <= 1'b1;
+		else
+			wbs_fsm_start <= 1'b0;
+	always @(posedge wb_clk_i or posedge wb_rst_i)
+		if (wb_rst_i)
+			wbs_fsm_busy <= 1'sb0;
+		else if (wbs_fsm_start)
+			wbs_fsm_busy <= 1'b1;
+		else if (wbs_fsm_done)
+			wbs_fsm_busy <= 1'b0;
 endmodule

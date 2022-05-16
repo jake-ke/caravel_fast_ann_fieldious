@@ -81,7 +81,7 @@ module ann_tb;
         out_fifo_deq = 0;
 
         // Repeat cycles of 1000 clock edges as needed to complete testbench
-        repeat (70) begin
+        repeat (500) begin
             repeat (1000) @(posedge clock);
             $display("+1000 cycles");
         end

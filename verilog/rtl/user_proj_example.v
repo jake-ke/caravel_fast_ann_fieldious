@@ -80,6 +80,7 @@ module user_proj_example #(
     wire                                                    wbs_mode;
     wire                                                    wbs_debug;
     wire                                                    wbs_done;
+    wire                                                    wbs_fsm_start;
     wire                                                    wbs_qp_mem_csb0;
     wire                                                    wbs_qp_mem_web0;
     wire [8:0]                                              wbs_qp_mem_addr0;
@@ -98,6 +99,8 @@ module user_proj_example #(
     wire [31:0]                                             wbs_node_mem_wdata;
     wire [31:0]                                             wbs_node_mem_rdata;
 
+    wire                                                    wbs_fsm_start_synced;
+    wire                                                    wbs_fsm_done_synced;
     wire                                                    fsm_start;
     wire                                                    fsm_done;
     wire                                                    send_best_arr;
@@ -171,6 +174,8 @@ module user_proj_example #(
         .wbs_mode                               (wbs_mode),
         .wbs_debug                              (wbs_debug),
         .wbs_done                               (wbs_done),
+        .wbs_fsm_start                          (wbs_fsm_start),
+        .wbs_fsm_done                           (wbs_fsm_done_synced),
         .wbs_qp_mem_csb0                        (wbs_qp_mem_csb0),
         .wbs_qp_mem_web0                        (wbs_qp_mem_web0),
         .wbs_qp_mem_addr0                       (wbs_qp_mem_addr0),
@@ -210,7 +215,7 @@ module user_proj_example #(
         .rst_n(rstmux_rst_n),
 
         .load_kdtree(load_kdtree),
-        .fsm_start(fsm_start),
+        .fsm_start(fsm_start | wbs_fsm_start_synced),
         .fsm_done(fsm_done),
         .send_best_arr(send_best_arr),
 
@@ -242,6 +247,23 @@ module user_proj_example #(
         .wbs_best_arr_addr1                     (wbs_best_arr_addr1),
         .wbs_best_arr_rdata1                    (wbs_best_arr_rdata1)
     );
+
+    SyncPulse fsm_start_sync (
+        .sCLK(wb_clk_i),
+        .sRST(),  // not needed
+        .sEN(wbs_fsm_start),
+        .dCLK(clkmux_clk),
+        .dPulse(wbs_fsm_start_synced)
+    );
+
+    SyncPulse fsm_done_sync (
+        .sCLK(clkmux_clk),
+        .sRST(),  // not needed
+        .sEN(fsm_done),
+        .dCLK(wb_clk_i),
+        .dPulse(wbs_fsm_done_synced)
+    );
+
 
 endmodule
 
