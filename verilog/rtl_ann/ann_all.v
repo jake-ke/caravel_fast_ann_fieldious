@@ -3873,7 +3873,7 @@ module top (
 		.leaf_index_two(int_node_leaf_index2),
 		.receiver_two_en(int_node_leaf_valid2),
 		.wb_mode(wbs_debug),
-		.wbs_we_i(wbs_we_i && wbs_node_mem_web),
+		.wbs_we_i(wbs_node_mem_web),
 		.wbs_adr_i(wbs_node_mem_addr),
 		.wbs_dat_o(wbs_node_mem_rdata)
 	);
@@ -3936,6 +3936,7 @@ module top (
 		.addr1((wbs_debug ? wbs_best_arr_addr1 : best_arr_addr1)),
 		.rdata1(best_arr_rdata1)
 	);
+	assign wbs_best_arr_rdata1 = best_arr_rdata1;
 	assign best_arr_csb0 = ~sl0_valid_out;
 	assign best_arr_web0 = 1'b0;
 	wire [22:0] sl0_l2_dist_capped;
@@ -4438,6 +4439,7 @@ module wbsCtrl (
 				end
 				else if (wbs_we_i_q & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
 					wbs_node_mem_web = 1'b1;
+					wbs_node_mem_addr = wbs_adr_i_q;
 					wbs_node_mem_wdata = wbs_dat_i_q;
 				end
 			end

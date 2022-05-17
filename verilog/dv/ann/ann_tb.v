@@ -151,7 +151,6 @@ module ann_tb;
 
 
         // wait for mgmt soc to finish configuring the io ports
-        // #1000000
         wait(wbs_cfg_done);
 
 
@@ -296,6 +295,11 @@ module ann_tb;
         $display("Query patches: %t", querytime);
         $display("Main Algorithm: %t", fsmtime);
         $display("Outputs: %t", outputtime);
+        `ifdef GL
+            $display("Monitor: Mega-Project WB (GL) Passed");
+        `else
+            $display("Monitor: Mega-Project WB (RTL) Passed");
+        `endif
     end
 
     // initial begin
@@ -317,11 +321,6 @@ module ann_tb;
     initial begin
         $display("Monitor: MPRJ-Logic WB Started");
         wait(wbs_done == 1);
-        `ifdef GL
-            $display("Monitor: Mega-Project WB (GL) Passed");
-        `else
-            $display("Monitor: Mega-Project WB (RTL) Passed");
-        `endif
         $finish;
     end
 
