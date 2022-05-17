@@ -1756,9 +1756,11 @@ module MainFSM (
 	clk,
 	rst_n,
 	load_kdtree,
+	load_done,
 	fsm_start,
 	fsm_done,
 	send_best_arr,
+	send_done,
 	agg_receiver_enq,
 	agg_receiver_full_n,
 	agg_change_fetch_width,
@@ -1817,9 +1819,11 @@ module MainFSM (
 	input clk;
 	input rst_n;
 	input wire load_kdtree;
+	output reg load_done;
 	input wire fsm_start;
 	output reg fsm_done;
 	input wire send_best_arr;
+	output reg send_done;
 	input wire agg_receiver_enq;
 	output reg agg_receiver_full_n;
 	output reg agg_change_fetch_width;
@@ -1898,7 +1902,9 @@ module MainFSM (
 			currState <= nextState;
 	always @(*) begin
 		nextState = currState;
+		load_done = 1'sb0;
 		fsm_done = 1'sb0;
+		send_done = 1'sb0;
 		agg_change_fetch_width = 1'sb0;
 		agg_input_fetch_width = 1'sb0;
 		agg_receiver_full_n = 1'sb0;
@@ -2002,8 +2008,10 @@ module MainFSM (
 					qp_mem_csb0 = 1'b0;
 					qp_mem_web0 = 1'b0;
 					qp_mem_addr0 = counter;
-					if (counter_done)
+					if (counter_done) begin
 						nextState = 32'd0;
+						load_done = 1'b1;
+					end
 				end
 			end
 			32'd4: begin
@@ -2338,8 +2346,10 @@ module MainFSM (
 				end
 				if (out_fifo_wenq) begin
 					counter_en = 1'b1;
-					if (counter_done)
+					if (counter_done) begin
 						nextState = 32'd0;
+						send_done = 1'b1;
+					end
 				end
 			end
 		endcase
@@ -3166,6 +3176,45 @@ module sram_1kbyte_1rw1r (
 		end
 	endgenerate
 endmodule
+module SyncBit (
+	sCLK,
+	sRST,
+	dCLK,
+	sEN,
+	sD_IN,
+	dD_OUT
+);
+	parameter init = 1'b0;
+	input sCLK;
+	input sRST;
+	input sEN;
+	input sD_IN;
+	input dCLK;
+	output wire dD_OUT;
+	reg sSyncReg;
+	reg dSyncReg1;
+	reg dSyncReg2;
+	assign dD_OUT = dSyncReg2;
+	always @(posedge sCLK or negedge sRST)
+		if (sRST == 1'b0)
+			sSyncReg <= init;
+		else if (sEN)
+			sSyncReg <= (sD_IN == 1'b1 ? 1'b1 : 1'b0);
+	always @(posedge dCLK or negedge sRST)
+		if (sRST == 1'b0) begin
+			dSyncReg1 <= init;
+			dSyncReg2 <= init;
+		end
+		else begin
+			dSyncReg1 <= sSyncReg;
+			dSyncReg2 <= dSyncReg1;
+		end
+	initial begin
+		sSyncReg = init;
+		dSyncReg1 = init;
+		dSyncReg2 = init;
+	end
+endmodule
 module SyncFIFO (
 	sCLK,
 	sRST,
@@ -3377,9 +3426,11 @@ module top (
 	clk,
 	rst_n,
 	load_kdtree,
+	load_done,
 	fsm_start,
 	fsm_done,
 	send_best_arr,
+	send_done,
 	io_clk,
 	io_rst_n,
 	in_fifo_wenq,
@@ -3423,9 +3474,11 @@ module top (
 	input wire clk;
 	input wire rst_n;
 	input wire load_kdtree;
+	output wire load_done;
 	input wire fsm_start;
 	output wire fsm_done;
 	input wire send_best_arr;
+	output wire send_done;
 	input wire io_clk;
 	input wire io_rst_n;
 	input wire in_fifo_wenq;
@@ -3691,8 +3744,10 @@ module top (
 		.clk(clk),
 		.rst_n(rst_n),
 		.load_kdtree(load_kdtree),
+		.load_done(load_done),
 		.fsm_start(fsm_start),
 		.fsm_done(fsm_done),
+		.send_done(send_done),
 		.send_best_arr(send_best_arr),
 		.agg_receiver_enq(agg_receiver_enq),
 		.agg_receiver_full_n(agg_receiver_full_n),
@@ -3808,7 +3863,7 @@ module top (
 		.rst_n(rst_n),
 		.fsm_enable(int_node_fsm_enable),
 		.sender_enable(int_node_sender_enable),
-		.sender_data((wbs_debug ? wbs_node_mem_wdata : int_node_sender_data)),
+		.sender_data((wbs_debug ? wbs_node_mem_wdata[(2 * DATA_WIDTH) - 1:0] : int_node_sender_data)),
 		.patch_en(int_node_patch_en),
 		.patch_in(int_node_patch_in),
 		.leaf_index(int_node_leaf_index),
@@ -3818,7 +3873,7 @@ module top (
 		.leaf_index_two(int_node_leaf_index2),
 		.receiver_two_en(int_node_leaf_valid2),
 		.wb_mode(wbs_debug),
-		.wbs_we_i(wbs_node_mem_web),
+		.wbs_we_i(wbs_we_i && wbs_node_mem_web),
 		.wbs_adr_i(wbs_node_mem_addr),
 		.wbs_dat_o(wbs_node_mem_rdata)
 	);
@@ -4190,8 +4245,11 @@ module wbsCtrl (
 	wbs_mode,
 	wbs_debug,
 	wbs_done,
+	wbs_cfg_done,
 	wbs_fsm_start,
-	wbs_fsm_done,
+	acc_fsm_done,
+	acc_load_done,
+	acc_send_done,
 	wbs_qp_mem_csb0,
 	wbs_qp_mem_web0,
 	wbs_qp_mem_addr0,
@@ -4233,8 +4291,11 @@ module wbsCtrl (
 	output reg wbs_mode;
 	output reg wbs_debug;
 	output reg wbs_done;
+	output reg wbs_cfg_done;
 	output reg wbs_fsm_start;
-	output wire wbs_fsm_done;
+	input wire acc_fsm_done;
+	input wire acc_load_done;
+	input wire acc_send_done;
 	output reg wbs_qp_mem_csb0;
 	output reg wbs_qp_mem_web0;
 	output reg [$clog2(NUM_QUERYS) - 1:0] wbs_qp_mem_addr0;
@@ -4257,7 +4318,10 @@ module wbsCtrl (
 	localparam WBS_DEBUG_ADDR = 32'h30000004;
 	localparam WBS_DONE_ADDR = 32'h30000008;
 	localparam WBS_FSM_START_ADDR = 32'h3000000c;
-	localparam WBS_FSM_BUSY_ADDR = 32'h30000010;
+	localparam WBS_FSM_DONE_ADDR = 32'h30000010;
+	localparam WBS_LOAD_DONE_ADDR = 32'h30000014;
+	localparam WBS_SEND_DONE_ADDR = 32'h30000018;
+	localparam WBS_CFG_DONE_ADDR = 32'h3000001c;
 	localparam WBS_QUERY_ADDR = 32'h30010000;
 	localparam WBS_LEAF_ADDR = 32'h30020000;
 	localparam WBS_BEST_ADDR = 32'h30030000;
@@ -4277,7 +4341,9 @@ module wbsCtrl (
 	reg [31:0] wbs_dat_o_q;
 	reg [31:0] wbs_dat_o_d;
 	reg wbs_dat_o_d_valid;
-	reg wbs_fsm_busy;
+	reg wbs_fsm_done;
+	reg wbs_load_done;
+	reg wbs_send_done;
 	assign wbs_valid = wbs_cyc_i & wbs_stb_i;
 	assign wbs_ack_o = wbs_ack_o_q;
 	assign wbs_dat_o = wbs_dat_o_q;
@@ -4349,8 +4415,12 @@ module wbsCtrl (
 					wbs_dat_o_d = wbs_node_mem_rdata;
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_BEST_ADDR)
 					wbs_dat_o_d = (wbs_adr_i_q[2] ? wbs_best_arr_rdata1[63:32] : wbs_best_arr_rdata1[31:0]);
-				else if (wbs_adr_i_q == WBS_FSM_BUSY_ADDR)
-					wbs_dat_o_d = {31'd0, wbs_fsm_busy};
+				else if (wbs_adr_i_q == WBS_FSM_DONE_ADDR)
+					wbs_dat_o_d = {31'd0, wbs_fsm_done};
+				else if (wbs_adr_i_q == WBS_LOAD_DONE_ADDR)
+					wbs_dat_o_d = {31'd0, wbs_load_done};
+				else if (wbs_adr_i_q == WBS_SEND_DONE_ADDR)
+					wbs_dat_o_d = {31'd0, wbs_send_done};
 			end
 			32'd3: begin
 				nextState = 32'd0;
@@ -4366,7 +4436,7 @@ module wbsCtrl (
 					wbs_leaf_mem_addr0 = wbs_adr_i_q[11:6];
 					wbs_leaf_mem_wleaf0 = {wbs_dat_i_q, wbs_dat_i_lower_q};
 				end
-				else if ((wbs_we_i_q & wbs_adr_i_q[2]) & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
+				else if (wbs_we_i_q & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
 					wbs_node_mem_web = 1'b1;
 					wbs_node_mem_wdata = wbs_dat_i_q;
 				end
@@ -4430,9 +4500,28 @@ module wbsCtrl (
 			wbs_fsm_start <= 1'b0;
 	always @(posedge wb_clk_i or posedge wb_rst_i)
 		if (wb_rst_i)
-			wbs_fsm_busy <= 1'sb0;
-		else if (wbs_fsm_start)
-			wbs_fsm_busy <= 1'b1;
-		else if (wbs_fsm_done)
-			wbs_fsm_busy <= 1'b0;
+			wbs_fsm_done <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_FSM_DONE_ADDR))
+			wbs_fsm_done <= 1'b0;
+		else if (acc_fsm_done)
+			wbs_fsm_done <= 1'b1;
+	always @(posedge wb_clk_i or posedge wb_rst_i)
+		if (wb_rst_i)
+			wbs_load_done <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_LOAD_DONE_ADDR))
+			wbs_load_done <= 1'b0;
+		else if (acc_load_done)
+			wbs_load_done <= 1'b1;
+	always @(posedge wb_clk_i or posedge wb_rst_i)
+		if (wb_rst_i)
+			wbs_send_done <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_SEND_DONE_ADDR))
+			wbs_send_done <= 1'b0;
+		else if (acc_send_done)
+			wbs_send_done <= 1'b1;
+	always @(posedge wb_clk_i or posedge wb_rst_i)
+		if (wb_rst_i)
+			wbs_cfg_done <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_CFG_DONE_ADDR))
+			wbs_cfg_done <= wbs_dat_i_q[0];
 endmodule

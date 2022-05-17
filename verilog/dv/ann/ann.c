@@ -28,7 +28,10 @@
 #define reg_mprj_cfg_debug                  (*(volatile uint32_t*)0x30000004)
 #define reg_mprj_cfg_done                   (*(volatile uint32_t*)0x30000008)
 #define reg_mprj_cfg_fsm_start              (*(volatile uint32_t*)0x3000000C)
-#define reg_mprj_cfg_fsm_busy               (*(volatile uint32_t*)0x30000010)
+#define reg_mprj_cfg_fsm_done               (*(volatile uint32_t*)0x30000010)
+#define reg_mprj_cfg_load_done              (*(volatile uint32_t*)0x30000014)
+#define reg_mprj_cfg_send_done              (*(volatile uint32_t*)0x30000018)
+#define reg_mprj_cfg_cfg_done               (*(volatile uint32_t*)0x3000001C)
 #define reg_mprj_cfg_query                  ((volatile uint32_t*)0x30010000)
 #define reg_mprj_cfg_leaf                   ((volatile uint32_t*)0x30020000)
 #define reg_mprj_cfg_best                   ((volatile uint32_t*)0x30030000)
@@ -60,7 +63,7 @@ void main()
 	// reg_spimaster_config = 0xa002;	// Enable, prescaler = 2,
                                         // connect to housekeeping SPI
 
-	// Connect the housekeeping SPI to the SPI master
+    // Connect the housekeeping SPI to the SPI master
 	// so that the CSB line is not left floating.  This allows
 	// all of the GPIO pins to be used for user functions.
 
@@ -70,20 +73,20 @@ void main()
     reg_mprj_io_34 = GPIO_MODE_USER_STD_OUTPUT;
     reg_mprj_io_33 = GPIO_MODE_USER_STD_OUTPUT;
     reg_mprj_io_32 = GPIO_MODE_USER_STD_OUTPUT;
-    reg_mprj_io_31 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_30 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_29 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_28 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_27 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_26 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_25 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_24 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_23 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_22 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_21 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_20 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_19 = GPIO_MODE_MGMT_STD_OUTPUT;
-    reg_mprj_io_18 = GPIO_MODE_MGMT_STD_OUTPUT;
+    reg_mprj_io_31 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_30 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_29 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_28 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_27 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_26 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_25 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_24 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_23 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_22 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_21 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_20 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_19 = GPIO_MODE_USER_STD_OUTPUT;
+    reg_mprj_io_18 = GPIO_MODE_USER_STD_OUTPUT;
     reg_mprj_io_17 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_16 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_15 = GPIO_MODE_USER_STD_INPUT_NOPULL;
@@ -118,59 +121,98 @@ void main()
 	reg_la2_data = 0x00000000;
 	reg_la3_data = 0x00000000;
 
-    // use wb clk and rst
-    reg_mprj_cfg_mode = 1;
-
-    // enable debug mode to load/store data
-    reg_mprj_cfg_debug = 1;
-
-    // query mem init
-    // num query
-    for (uint32_t i=0; i<1; i++){  // testing only
-    // for (uint32_t i=0; i<494; i++){
-        for (uint32_t j=0; j<2; j++){
-            reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
-        }
-    }
+    // Done configuring the IO
+    reg_mprj_cfg_cfg_done = 1;
 
 
-    // leaf mem init
-    // num leaf
-    for (uint32_t i=0; i<1; i++){  // testing only
-    // for (uint32_t i=0; i<63; i++){
-        // num patch
-        for (uint32_t j=0; j<8; j++){
-            for (uint32_t r=0; r<2; r++){
-                reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
+    bool skip_data_init = true;
+    if (!skip_data_init){
+        // use wb clk and rst
+        reg_mprj_cfg_mode = 1;
+        // enable debug mode to load/store data
+        reg_mprj_cfg_debug = 1;
+        
+        // query mem init
+        // num query
+        for (uint32_t i=0; i<2; i++){  // testing only
+        // for (uint32_t i=0; i<494; i++){
+            for (uint32_t j=0; j<2; j++){
+                reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
             }
         }
-    }
 
 
-    // internal node init
-
-
-    // disable debug mode to release memory control
-    reg_mprj_cfg_debug = 0;
-
-    // start fsm
-    reg_mprj_cfg_fsm_start = 1;
-    while(reg_mprj_cfg_fsm_busy == 1);
-    reg_mprj_cfg_done = 1;
-
-
-    // enable debug mode to load/store data
-    reg_mprj_cfg_debug = 1;
-
-    // best array read back
-    // num query
-    for (uint32_t i=0; i<2; i++){  // testing only
-    // for (uint32_t i=0; i<494; i++){
-        for (uint32_t j=0; j<2; j++){
-            uint32_t data = reg_mprj_cfg_best[2 * i + j];
+        // leaf mem init
+        // num leaf
+        for (uint32_t i=0; i<2; i++){  // testing only
+        // for (uint32_t i=0; i<63; i++){
+            // num patch
+            for (uint32_t j=0; j<8; j++){
+                for (uint32_t r=0; r<2; r++){
+                    reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
+                }
+            }
         }
+
+
+        // internal node init
+
+
+        // disable debug mode to release memory control
+        reg_mprj_cfg_mode = 0;
+        reg_mprj_cfg_debug = 0;
     }
 
+
+    // // start fsm
+    // reg_mprj_cfg_fsm_done = 0;
+    // reg_mprj_cfg_fsm_start = 1;
+    // while(reg_mprj_cfg_fsm_done == 1);
+    // reg_mprj_cfg_fsm_done = 0;
+
+
+    bool debug_mem = true;
+    if (debug_mem){
+        while(reg_mprj_cfg_send_done==0);
+
+        // enable debug mode to load/store data
+        reg_mprj_cfg_mode = 1;
+        reg_mprj_cfg_debug = 1;
+
+        // query mem read
+        // num query
+        for (uint32_t i=0; i<2; i++){  // testing only
+        // for (uint32_t i=0; i<494; i++){
+            for (uint32_t j=0; j<2; j++){
+                uint32_t data = reg_mprj_cfg_query[2 * i + j];
+            }
+        }
+
+        // leaf mem read
+        // num leaf
+        for (uint32_t i=0; i<2; i++){  // testing only
+        // for (uint32_t i=0; i<63; i++){
+            // num patch
+            for (uint32_t j=0; j<8; j++){
+                for (uint32_t r=0; r<2; r++){
+                    uint32_t data = reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r];
+                }
+            }
+        }
+
+        // best array read back
+        // num query
+        for (uint32_t i=0; i<2; i++){  // testing only
+        // for (uint32_t i=0; i<494; i++){
+            for (uint32_t j=0; j<2; j++){
+                uint32_t data = reg_mprj_cfg_best[2 * i + j];
+            }
+        }
+
+        // disable debug mode to release memory control
+        reg_mprj_cfg_mode = 0;
+        reg_mprj_cfg_debug = 0;
+    }
 
     // tell ann_tb to stop
     reg_mprj_cfg_done = 1;
