@@ -95,10 +95,11 @@ module user_proj_example #(
     wire                                                    wbs_best_arr_csb1;
     wire [7:0]                                              wbs_best_arr_addr1;
     wire [63:0]                                             wbs_best_arr_rdata1;
-    wire                                                    wbs_node_mem_web;
-    wire [31:0]                                             wbs_node_mem_addr;
-    wire [31:0]                                             wbs_node_mem_wdata;
-    wire [31:0]                                             wbs_node_mem_rdata;
+    wire                                                    wbs_node_mem_we;
+    wire                                                    wbs_node_mem_rd;
+    wire [5:0]                                              wbs_node_mem_addr;
+    wire [21:0]                                             wbs_node_mem_wdata;
+    wire [21:0]                                             wbs_node_mem_rdata;
 
     wire                                                    wbs_fsm_start_synced;
     wire                                                    fsm_done_synced;
@@ -203,7 +204,8 @@ module user_proj_example #(
         .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
         .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
         .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0),
-        .wbs_node_mem_web                       (wbs_node_mem_web),
+        .wbs_node_mem_we                        (wbs_node_mem_we),
+        .wbs_node_mem_rd                        (wbs_node_mem_rd),
         .wbs_node_mem_addr                      (wbs_node_mem_addr),
         .wbs_node_mem_wdata                     (wbs_node_mem_wdata),
         .wbs_node_mem_rdata                     (wbs_node_mem_rdata),
@@ -258,7 +260,8 @@ module user_proj_example #(
         .wbs_leaf_mem_addr0                     (wbs_leaf_mem_addr0),
         .wbs_leaf_mem_wleaf0                    (wbs_leaf_mem_wleaf0),
         .wbs_leaf_mem_rleaf0                    (wbs_leaf_mem_rleaf0),
-        .wbs_node_mem_web                       (wbs_node_mem_web),
+        .wbs_node_mem_we                        (wbs_node_mem_we),
+        .wbs_node_mem_rd                        (wbs_node_mem_rd),
         .wbs_node_mem_addr                      (wbs_node_mem_addr),
         .wbs_node_mem_wdata                     (wbs_node_mem_wdata),
         .wbs_node_mem_rdata                     (wbs_node_mem_rdata),
