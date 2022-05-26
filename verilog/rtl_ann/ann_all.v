@@ -485,9 +485,9 @@ endmodule
 module internal_node_tree (
 	clk,
 	rst_n,
-	fsm_enable,
 	sender_enable,
 	sender_data,
+	sender_addr,
 	patch_en,
 	patch_two_en,
 	patch_in,
@@ -496,9 +496,7 @@ module internal_node_tree (
 	leaf_index_two,
 	receiver_en,
 	receiver_two_en,
-	wb_mode,
-	wbs_we_i,
-	wbs_adr_i,
+	wbs_rd_en_i,
 	wbs_dat_o
 );
 	parameter INTERNAL_WIDTH = 22;
@@ -506,9 +504,9 @@ module internal_node_tree (
 	parameter ADDRESS_WIDTH = 8;
 	input clk;
 	input rst_n;
-	input fsm_enable;
 	input sender_enable;
 	input [INTERNAL_WIDTH - 1:0] sender_data;
+	input [5:0] sender_addr;
 	input patch_en;
 	input patch_two_en;
 	input [PATCH_WIDTH - 1:0] patch_in;
@@ -517,32 +515,17 @@ module internal_node_tree (
 	output reg [ADDRESS_WIDTH - 1:0] leaf_index_two;
 	output wire receiver_en;
 	output wire receiver_two_en;
-	input wb_mode;
-	input wbs_we_i;
-	input [31:0] wbs_adr_i;
-	output wire [31:0] wbs_dat_o;
+	input wbs_rd_en_i;
+	output reg [21:0] wbs_dat_o;
 	wire wen;
-	assign wen = (fsm_enable && sender_enable) && !wb_mode;
+	assign wen = sender_enable;
 	reg [INTERNAL_WIDTH - 1:0] rdata_storage [63:0];
 	reg [INTERNAL_WIDTH - 1:0] write_data;
-	reg wb_wen;
-	reg [31:0] wb_out;
-	wire signed [7:0] wb_addr;
-	assign wb_addr = wbs_adr_i[7:0] - 8'd1;
-	assign wbs_dat_o = {10'b0000000000, wb_out[21:0]};
-	always @(*)
-		if (wb_mode) begin
-			if (wbs_we_i) begin
-				write_data[21:0] = sender_data[21:0];
-				wb_wen = 1'b1;
-			end
-			else begin
-				wb_out[21:0] = rdata_storage[wb_addr[5:0]][21:0];
-				wb_wen = 1'b0;
-			end
-		end
-		else
-			write_data = sender_data[21:0];
+	always @(posedge clk)
+		if (rst_n == 0)
+			wbs_dat_o <= {INTERNAL_WIDTH {1'b0}};
+		else if (wbs_rd_en_i)
+			wbs_dat_o <= rdata_storage[sender_addr];
 	reg [5:0] wadr;
 	reg one_hot_address_en [63:0];
 	wire [PATCH_WIDTH - 1:0] patch_out;
@@ -583,23 +566,10 @@ module internal_node_tree (
 		end
 	assign receiver_en = latency_track_reciever_en[6];
 	assign receiver_two_en = latency_track_reciever_two_en[6];
-	always @(posedge clk)
-		if (rst_n == 0)
-			wadr <= 0;
-		else if (wen && !wb_mode)
-			wadr <= wadr + 1;
-		else
-			wadr <= wadr;
 	always @(*) begin : sv2v_autoblock_1
 		reg signed [31:0] q;
 		for (q = 0; q < 128; q = q + 1)
-			if (wb_mode) begin
-				if (q == wb_addr)
-					one_hot_address_en[q] = 1'b1;
-				else
-					one_hot_address_en[q] = 1'b0;
-			end
-			else if (q == wadr)
+			if (q == sender_addr)
 				one_hot_address_en[q] = 1'b1;
 			else
 				one_hot_address_en[q] = 1'b0;
@@ -623,10 +593,10 @@ module internal_node_tree (
 				) node(
 					.clk(clk),
 					.rst_n(rst_n),
-					.wen((wen || wb_wen) && one_hot_address_en[((2 ** i) + j) - 1]),
+					.wen(wen && one_hot_address_en[((2 ** i) + j) - 1]),
 					.valid(level_valid[j][i]),
 					.valid_two(level_valid_two[j][i]),
-					.wdata(write_data),
+					.wdata(sender_data),
 					.patch_in(level_patches[i]),
 					.patch_in_two(level_patches_two[i]),
 					.valid_left(level_valid_storage[j * 2][i]),
@@ -1765,7 +1735,8 @@ module MainFSM (
 	agg_receiver_full_n,
 	agg_change_fetch_width,
 	agg_input_fetch_width,
-	int_node_fsm_enable,
+	int_node_sender_enable,
+	int_node_sender_addr,
 	int_node_patch_en,
 	int_node_leaf_index,
 	int_node_patch_en2,
@@ -1828,7 +1799,8 @@ module MainFSM (
 	output reg agg_receiver_full_n;
 	output reg agg_change_fetch_width;
 	output reg [2:0] agg_input_fetch_width;
-	output reg int_node_fsm_enable;
+	output reg int_node_sender_enable;
+	output reg [5:0] int_node_sender_addr;
 	output reg int_node_patch_en;
 	input wire [LEAF_ADDRW - 1:0] int_node_leaf_index;
 	output reg int_node_patch_en2;
@@ -1908,7 +1880,8 @@ module MainFSM (
 		agg_change_fetch_width = 1'sb0;
 		agg_input_fetch_width = 1'sb0;
 		agg_receiver_full_n = 1'sb0;
-		int_node_fsm_enable = 1'sb0;
+		int_node_sender_enable = 1'sb0;
+		int_node_sender_addr = 1'sb0;
 		int_node_patch_en = 1'sb0;
 		int_node_patch_en2 = 1'sb0;
 		qp_mem_csb0 = 1'b1;
@@ -1975,8 +1948,9 @@ module MainFSM (
 			32'd1: begin
 				counter_in = NUM_NODES - 1;
 				agg_receiver_full_n = 1'b1;
-				int_node_fsm_enable = 1'b1;
+				int_node_sender_addr = counter;
 				if (agg_receiver_enq) begin
+					int_node_sender_enable = 1'b1;
 					counter_en = 1'b1;
 					if (counter_done) begin
 						nextState = 32'd2;
@@ -2838,87 +2812,6 @@ module RunningMin (
 				p7_idx_min <= {leaf_idx_in, p7_idx};
 			end
 endmodule
-module sky130_sram_1kbyte_1rw1r_32x256_8 (
-	clk0,
-	csb0,
-	web0,
-	wmask0,
-	addr0,
-	din0,
-	dout0,
-	clk1,
-	csb1,
-	addr1,
-	dout1
-);
-	parameter NUM_WMASKS = 4;
-	parameter DATA_WIDTH = 32;
-	parameter ADDR_WIDTH = 8;
-	parameter RAM_DEPTH = 1 << ADDR_WIDTH;
-	parameter DELAY = 3;
-	parameter VERBOSE = 0;
-	parameter T_HOLD = 1;
-	input clk0;
-	input csb0;
-	input web0;
-	input [NUM_WMASKS - 1:0] wmask0;
-	input [ADDR_WIDTH - 1:0] addr0;
-	input [DATA_WIDTH - 1:0] din0;
-	output reg [DATA_WIDTH - 1:0] dout0;
-	input clk1;
-	input csb1;
-	input [ADDR_WIDTH - 1:0] addr1;
-	output reg [DATA_WIDTH - 1:0] dout1;
-	reg csb0_reg;
-	reg web0_reg;
-	reg [NUM_WMASKS - 1:0] wmask0_reg;
-	reg [ADDR_WIDTH - 1:0] addr0_reg;
-	reg [DATA_WIDTH - 1:0] din0_reg;
-	reg [DATA_WIDTH - 1:0] mem [0:RAM_DEPTH - 1];
-	always @(posedge clk0) begin
-		csb0_reg = csb0;
-		web0_reg = web0;
-		wmask0_reg = wmask0;
-		addr0_reg = addr0;
-		din0_reg = din0;
-		#(T_HOLD) dout0 = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
-		if ((!csb0_reg && web0_reg) && VERBOSE)
-			$display($time, " Reading %m addr0=%b dout0=%b", addr0_reg, mem[addr0_reg]);
-		if ((!csb0_reg && !web0_reg) && VERBOSE)
-			$display($time, " Writing %m addr0=%b din0=%b wmask0=%b", addr0_reg, din0_reg, wmask0_reg);
-	end
-	reg csb1_reg;
-	reg [ADDR_WIDTH - 1:0] addr1_reg;
-	always @(posedge clk1) begin
-		csb1_reg = csb1;
-		addr1_reg = addr1;
-		if (((!csb0 && !web0) && !csb1) && (addr0 == addr1))
-			$display($time, " WARNING: Writing and reading addr0=%b and addr1=%b simultaneously!", addr0, addr1);
-		#(T_HOLD) dout1 = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
-		if (!csb1_reg && VERBOSE)
-			$display($time, " Reading %m addr1=%b dout1=%b", addr1_reg, mem[addr1_reg]);
-	end
-	always @(negedge clk0) begin : MEM_WRITE0
-		if (!csb0_reg && !web0_reg) begin
-			if (wmask0_reg[0])
-				mem[addr0_reg][7:0] = din0_reg[7:0];
-			if (wmask0_reg[1])
-				mem[addr0_reg][15:8] = din0_reg[15:8];
-			if (wmask0_reg[2])
-				mem[addr0_reg][23:16] = din0_reg[23:16];
-			if (wmask0_reg[3])
-				mem[addr0_reg][31:24] = din0_reg[31:24];
-		end
-	end
-	always @(negedge clk0) begin : MEM_READ0
-		if (!csb0_reg && web0_reg)
-			dout0 <= #(DELAY) mem[addr0_reg];
-	end
-	always @(negedge clk1) begin : MEM_READ1
-		if (!csb1_reg)
-			dout1 <= #(DELAY) mem[addr1_reg];
-	end
-endmodule
 module SortedList (
 	clk,
 	insert,
@@ -3453,7 +3346,8 @@ module top (
 	wbs_best_arr_csb1,
 	wbs_best_arr_addr1,
 	wbs_best_arr_rdata1,
-	wbs_node_mem_web,
+	wbs_node_mem_we,
+	wbs_node_mem_rd,
 	wbs_node_mem_addr,
 	wbs_node_mem_wdata,
 	wbs_node_mem_rdata
@@ -3474,11 +3368,11 @@ module top (
 	input wire clk;
 	input wire rst_n;
 	input wire load_kdtree;
-	output wire load_done;
+	output reg load_done;
 	input wire fsm_start;
-	output wire fsm_done;
+	output reg fsm_done;
 	input wire send_best_arr;
-	output wire send_done;
+	output reg send_done;
 	input wire io_clk;
 	input wire io_rst_n;
 	input wire in_fifo_wenq;
@@ -3501,10 +3395,17 @@ module top (
 	input wire wbs_best_arr_csb1;
 	input wire [7:0] wbs_best_arr_addr1;
 	output wire [63:0] wbs_best_arr_rdata1;
-	input wire wbs_node_mem_web;
-	input wire [31:0] wbs_node_mem_addr;
-	input wire [31:0] wbs_node_mem_wdata;
-	output wire [31:0] wbs_node_mem_rdata;
+	input wire wbs_node_mem_we;
+	input wire wbs_node_mem_rd;
+	input wire [5:0] wbs_node_mem_addr;
+	input wire [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_wdata;
+	output wire [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_rdata;
+	reg load_kdtree_r;
+	wire load_done_w;
+	reg fsm_start_r;
+	wire fsm_done_w;
+	reg send_best_arr_r;
+	wire send_done_w;
 	wire in_fifo_deq;
 	wire [DATA_WIDTH - 1:0] in_fifo_rdata;
 	wire in_fifo_rempty_n;
@@ -3521,9 +3422,9 @@ module top (
 	wire agg_receiver_enq;
 	wire agg_change_fetch_width;
 	wire [2:0] agg_input_fetch_width;
-	wire int_node_fsm_enable;
 	wire int_node_sender_enable;
 	wire [(2 * DATA_WIDTH) - 1:0] int_node_sender_data;
+	wire [5:0] int_node_sender_addr;
 	wire int_node_patch_en;
 	wire [(PATCH_SIZE * DATA_WIDTH) - 1:0] int_node_patch_in;
 	wire [LEAF_ADDRW - 1:0] int_node_leaf_index;
@@ -3731,6 +3632,23 @@ module top (
 	wire [(LEAF_ADDRW + IDX_WIDTH) - 1:0] sl1_merged_idx_2;
 	wire [(LEAF_ADDRW + IDX_WIDTH) - 1:0] sl1_merged_idx_3;
 	wire [(K * LEAF_ADDRW) - 1:0] computes1_leaf_idx;
+	always @(posedge clk or negedge rst_n)
+		if (~rst_n) begin
+			load_kdtree_r <= 1'sb0;
+			fsm_start_r <= 1'sb0;
+			send_best_arr_r <= 1'sb0;
+			load_done <= 1'sb0;
+			fsm_done <= 1'sb0;
+			send_done <= 1'sb0;
+		end
+		else begin
+			load_kdtree_r <= load_kdtree;
+			fsm_start_r <= fsm_start;
+			send_best_arr_r <= send_best_arr;
+			load_done <= load_done_w;
+			fsm_done <= fsm_done_w;
+			send_done <= send_done_w;
+		end
 	MainFSM #(
 		.DATA_WIDTH(DATA_WIDTH),
 		.LEAF_SIZE(LEAF_SIZE),
@@ -3743,17 +3661,18 @@ module top (
 	) main_fsm_inst(
 		.clk(clk),
 		.rst_n(rst_n),
-		.load_kdtree(load_kdtree),
-		.load_done(load_done),
-		.fsm_start(fsm_start),
-		.fsm_done(fsm_done),
-		.send_done(send_done),
-		.send_best_arr(send_best_arr),
+		.load_kdtree(load_kdtree_r),
+		.load_done(load_done_w),
+		.fsm_start(fsm_start_r),
+		.fsm_done(fsm_done_w),
+		.send_done(send_done_w),
+		.send_best_arr(send_best_arr_r),
 		.agg_receiver_enq(agg_receiver_enq),
 		.agg_receiver_full_n(agg_receiver_full_n),
 		.agg_change_fetch_width(agg_change_fetch_width),
 		.agg_input_fetch_width(agg_input_fetch_width),
-		.int_node_fsm_enable(int_node_fsm_enable),
+		.int_node_sender_enable(int_node_sender_enable),
+		.int_node_sender_addr(int_node_sender_addr),
 		.int_node_patch_en(int_node_patch_en),
 		.int_node_leaf_index(int_node_leaf_index),
 		.int_node_patch_en2(int_node_patch_en2),
@@ -3861,9 +3780,9 @@ module top (
 	) internal_node_inst(
 		.clk(clk),
 		.rst_n(rst_n),
-		.fsm_enable(int_node_fsm_enable),
-		.sender_enable(int_node_sender_enable),
-		.sender_data((wbs_debug ? wbs_node_mem_wdata[(2 * DATA_WIDTH) - 1:0] : int_node_sender_data)),
+		.sender_enable((wbs_debug ? wbs_node_mem_we : int_node_sender_enable)),
+		.sender_data((wbs_debug ? wbs_node_mem_wdata : int_node_sender_data)),
+		.sender_addr((wbs_debug ? wbs_node_mem_addr : int_node_sender_addr)),
 		.patch_en(int_node_patch_en),
 		.patch_in(int_node_patch_in),
 		.leaf_index(int_node_leaf_index),
@@ -3872,12 +3791,9 @@ module top (
 		.patch_in_two(int_node_patch_in2),
 		.leaf_index_two(int_node_leaf_index2),
 		.receiver_two_en(int_node_leaf_valid2),
-		.wb_mode(wbs_debug),
-		.wbs_we_i(wbs_node_mem_web),
-		.wbs_adr_i(wbs_node_mem_addr),
+		.wbs_rd_en_i((wbs_debug ? wbs_node_mem_rd : 1'b0)),
 		.wbs_dat_o(wbs_node_mem_rdata)
 	);
-	assign int_node_sender_enable = agg_receiver_enq;
 	assign int_node_sender_data = agg_receiver_data[(2 * DATA_WIDTH) - 1:0];
 	assign int_node_patch_in = qp_mem_rpatch0;
 	assign int_node_patch_in2 = qp_mem_rpatch1;
@@ -3936,7 +3852,7 @@ module top (
 		.addr1((wbs_debug ? wbs_best_arr_addr1 : best_arr_addr1)),
 		.rdata1(best_arr_rdata1)
 	);
-	assign wbs_best_arr_rdata1 = best_arr_rdata1;
+	assign wbs_best_arr_rdata1 = best_arr_rdata1[0+:64];
 	assign best_arr_csb0 = ~sl0_valid_out;
 	assign best_arr_web0 = 1'b0;
 	wire [22:0] sl0_l2_dist_capped;
@@ -4261,7 +4177,8 @@ module wbsCtrl (
 	wbs_leaf_mem_addr0,
 	wbs_leaf_mem_wleaf0,
 	wbs_leaf_mem_rleaf0,
-	wbs_node_mem_web,
+	wbs_node_mem_rd,
+	wbs_node_mem_we,
 	wbs_node_mem_addr,
 	wbs_node_mem_wdata,
 	wbs_node_mem_rdata,
@@ -4307,10 +4224,11 @@ module wbsCtrl (
 	output reg [LEAF_ADDRW - 1:0] wbs_leaf_mem_addr0;
 	output reg [63:0] wbs_leaf_mem_wleaf0;
 	input wire [(LEAF_SIZE * 64) - 1:0] wbs_leaf_mem_rleaf0;
-	output reg wbs_node_mem_web;
-	output reg [31:0] wbs_node_mem_addr;
-	output reg [31:0] wbs_node_mem_wdata;
-	input wire [31:0] wbs_node_mem_rdata;
+	output reg wbs_node_mem_rd;
+	output reg wbs_node_mem_we;
+	output reg [5:0] wbs_node_mem_addr;
+	output reg [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_wdata;
+	input wire [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_rdata;
 	output reg wbs_best_arr_csb1;
 	output reg [7:0] wbs_best_arr_addr1;
 	input wire [63:0] wbs_best_arr_rdata1;
@@ -4369,7 +4287,8 @@ module wbsCtrl (
 		wbs_leaf_mem_wleaf0 = 1'sb0;
 		wbs_best_arr_csb1 = 1'b1;
 		wbs_best_arr_addr1 = 1'sb0;
-		wbs_node_mem_web = 1'b0;
+		wbs_node_mem_we = 1'b0;
+		wbs_node_mem_rd = 1'b0;
 		wbs_node_mem_addr = 1'sb0;
 		wbs_node_mem_wdata = 1'sb0;
 		case (currState)
@@ -4396,8 +4315,8 @@ module wbsCtrl (
 					wbs_leaf_mem_addr0 = wbs_adr_i_q[11:6];
 				end
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR) begin
-					wbs_node_mem_web = 1'b0;
-					wbs_node_mem_addr = wbs_adr_i_q;
+					wbs_node_mem_rd = 1'b1;
+					wbs_node_mem_addr = wbs_adr_i_q[7:2];
 				end
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_BEST_ADDR) begin
 					wbs_best_arr_csb1 = 1'b0;
@@ -4413,7 +4332,7 @@ module wbsCtrl (
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_LEAF_ADDR)
 					wbs_dat_o_d = (wbs_adr_i_q[2] ? wbs_leaf_mem_rleaf0[(wbs_adr_i_q[5:3] * 64) + 63-:32] : wbs_leaf_mem_rleaf0[(wbs_adr_i_q[5:3] * 64) + 31-:32]);
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)
-					wbs_dat_o_d = wbs_node_mem_rdata;
+					wbs_dat_o_d = {10'd0, wbs_node_mem_rdata};
 				else if ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_BEST_ADDR)
 					wbs_dat_o_d = (wbs_adr_i_q[2] ? wbs_best_arr_rdata1[63:32] : wbs_best_arr_rdata1[31:0]);
 				else if (wbs_adr_i_q == WBS_FSM_DONE_ADDR)
@@ -4438,9 +4357,9 @@ module wbsCtrl (
 					wbs_leaf_mem_wleaf0 = {wbs_dat_i_q, wbs_dat_i_lower_q};
 				end
 				else if (wbs_we_i_q & ((wbs_adr_i_q & WBS_ADDR_MASK) == WBS_NODE_ADDR)) begin
-					wbs_node_mem_web = 1'b1;
-					wbs_node_mem_addr = wbs_adr_i_q;
-					wbs_node_mem_wdata = wbs_dat_i_q;
+					wbs_node_mem_we = 1'b1;
+					wbs_node_mem_addr = wbs_adr_i_q[7:2];
+					wbs_node_mem_wdata = wbs_dat_i_q[21:0];
 				end
 			end
 		endcase
