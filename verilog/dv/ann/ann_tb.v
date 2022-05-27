@@ -75,7 +75,7 @@ module ann_tb;
     // simulation.  Normally this would be a slow clock and the digital PLL
     // would be the fast clock.
 
-    always #12.5 clock <= (clock === 1'b0);
+    always #1 clock <= (clock === 1'b0);
     always #5 io_clk <= (io_clk === 1'b0);
 
     initial begin

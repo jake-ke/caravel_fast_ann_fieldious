@@ -66,17 +66,24 @@ module user_proj_example #(
     output [`MPRJ_IO_PADS-1:0] io_oeb,
 
     // IRQ
-    output [2:0] irq
+    output [2:0] irq,
+
+    //user clock
+    input user_clock2
 );
 
     wire [`MPRJ_IO_PADS-1:0] io_in;
     wire [`MPRJ_IO_PADS-1:0] io_out;
     wire [`MPRJ_IO_PADS-1:0] io_oeb;
 
+    wire                                                    clkmux_usrclk;
     wire                                                    io_clk;
     wire                                                    io_rst_n;
     wire                                                    clkmux_clk;
     wire                                                    rstmux_rst_n;
+    wire                                                    usr_rst_n_sync;
+    wire                                                    wb_rst_n_sync;
+    wire                                                    wbs_usrclk_sel;
     wire                                                    wbs_mode;
     wire                                                    wbs_debug;
     wire                                                    wbs_done;
@@ -151,11 +158,18 @@ module user_proj_example #(
     assign io_out[37:35] = 3'd0;
 
 
+    ClockMux usrclockmux_inst (
+        .select  ( wbs_usrclk_sel ),
+        .clk0    ( io_clk         ),
+        .clk1    ( user_clock2    ),
+        .out_clk ( clkmux_usrclk  )
+    );
+
     ClockMux clockmux_inst (
-        .select  ( wbs_mode  ),
-        .clk0    ( io_clk    ),
-        .clk1    ( wb_clk_i  ),
-        .out_clk ( clkmux_clk)
+        .select  ( wbs_mode      ),
+        .clk0    ( clkmux_usrclk ),
+        .clk1    ( wb_clk_i      ),
+        .out_clk ( clkmux_clk    )
     );
 
     ResetMux resetmux_inst (
@@ -163,6 +177,18 @@ module user_proj_example #(
         .rst0    ( io_rst_n     ),
         .rst1    ( ~wb_rst_i    ),
         .out_rst ( rstmux_rst_n )
+    );
+
+    SyncResetA usr_rst_synca_inst (
+        .CLK     (clkmux_clk),
+        .IN_RST  (rstmux_rst_n),
+        .OUT_RST (usr_rst_n_sync)
+    );
+
+    SyncResetA wb_rst_synca_inst (
+        .CLK     (wb_clk_i),
+        .IN_RST  (~wb_rst_i),
+        .OUT_RST (wb_rst_n_sync)
     );
 
     wbsCtrl 
@@ -177,7 +203,7 @@ module user_proj_example #(
     // ) 
     wbsctrl_inst (
         .wb_clk_i                               (wb_clk_i),
-        .wb_rst_i                               (wb_rst_i),
+        .wb_rst_n_i                             (wb_rst_n_sync),
         .wbs_stb_i                              (wbs_stb_i),
         .wbs_cyc_i                              (wbs_cyc_i),
         .wbs_we_i                               (wbs_we_i),
@@ -188,6 +214,7 @@ module user_proj_example #(
         .wbs_dat_o                              (wbs_dat_o),
         .wbs_mode                               (wbs_mode),
         .wbs_debug                              (wbs_debug),
+        .wbs_usrclk_sel                         (wbs_usrclk_sel),
         .wbs_done                               (wbs_done),
         .wbs_cfg_done                           (wbs_cfg_done),
         .wbs_fsm_start                          (wbs_fsm_start),
@@ -231,7 +258,7 @@ module user_proj_example #(
     // ) 
     acc_inst (
         .clk(clkmux_clk),
-        .rst_n(rstmux_rst_n),
+        .rst_n(usr_rst_n_sync),
 
         .load_kdtree(load_kdtree),
         .load_done(load_done),
@@ -304,7 +331,7 @@ module user_proj_example #(
 
     SyncBit wbs_mode_sync (
         .sCLK(wb_clk_i),
-        .sRST(~wb_rst_i),
+        .sRST(wb_rst_n_sync),
         .sEN(1'b1),
         .sD_IN(wbs_mode),
         .dCLK(io_clk),
@@ -313,7 +340,7 @@ module user_proj_example #(
 
     SyncBit wbs_done_sync (
         .sCLK(wb_clk_i),
-        .sRST(~wb_rst_i),
+        .sRST(wb_rst_n_sync),
         .sEN(1'b1),
         .sD_IN(wbs_done),
         .dCLK(io_clk),
@@ -322,7 +349,7 @@ module user_proj_example #(
 
     SyncBit wbs_cfg_done_sync (
         .sCLK(wb_clk_i),
-        .sRST(~wb_rst_i),
+        .sRST(wb_rst_n_sync),
         .sEN(1'b1),
         .sD_IN(wbs_cfg_done),
         .dCLK(io_clk),

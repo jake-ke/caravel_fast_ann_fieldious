@@ -2812,6 +2812,87 @@ module RunningMin (
 				p7_idx_min <= {leaf_idx_in, p7_idx};
 			end
 endmodule
+module sky130_sram_1kbyte_1rw1r_32x256_8 (
+	clk0,
+	csb0,
+	web0,
+	wmask0,
+	addr0,
+	din0,
+	dout0,
+	clk1,
+	csb1,
+	addr1,
+	dout1
+);
+	parameter NUM_WMASKS = 4;
+	parameter DATA_WIDTH = 32;
+	parameter ADDR_WIDTH = 8;
+	parameter RAM_DEPTH = 1 << ADDR_WIDTH;
+	parameter DELAY = 3;
+	parameter VERBOSE = 0;
+	parameter T_HOLD = 1;
+	input clk0;
+	input csb0;
+	input web0;
+	input [NUM_WMASKS - 1:0] wmask0;
+	input [ADDR_WIDTH - 1:0] addr0;
+	input [DATA_WIDTH - 1:0] din0;
+	output reg [DATA_WIDTH - 1:0] dout0;
+	input clk1;
+	input csb1;
+	input [ADDR_WIDTH - 1:0] addr1;
+	output reg [DATA_WIDTH - 1:0] dout1;
+	reg csb0_reg;
+	reg web0_reg;
+	reg [NUM_WMASKS - 1:0] wmask0_reg;
+	reg [ADDR_WIDTH - 1:0] addr0_reg;
+	reg [DATA_WIDTH - 1:0] din0_reg;
+	reg [DATA_WIDTH - 1:0] mem [0:RAM_DEPTH - 1];
+	always @(posedge clk0) begin
+		csb0_reg = csb0;
+		web0_reg = web0;
+		wmask0_reg = wmask0;
+		addr0_reg = addr0;
+		din0_reg = din0;
+		#(T_HOLD) dout0 = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+		if ((!csb0_reg && web0_reg) && VERBOSE)
+			$display($time, " Reading %m addr0=%b dout0=%b", addr0_reg, mem[addr0_reg]);
+		if ((!csb0_reg && !web0_reg) && VERBOSE)
+			$display($time, " Writing %m addr0=%b din0=%b wmask0=%b", addr0_reg, din0_reg, wmask0_reg);
+	end
+	reg csb1_reg;
+	reg [ADDR_WIDTH - 1:0] addr1_reg;
+	always @(posedge clk1) begin
+		csb1_reg = csb1;
+		addr1_reg = addr1;
+		if (((!csb0 && !web0) && !csb1) && (addr0 == addr1))
+			$display($time, " WARNING: Writing and reading addr0=%b and addr1=%b simultaneously!", addr0, addr1);
+		#(T_HOLD) dout1 = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+		if (!csb1_reg && VERBOSE)
+			$display($time, " Reading %m addr1=%b dout1=%b", addr1_reg, mem[addr1_reg]);
+	end
+	always @(negedge clk0) begin : MEM_WRITE0
+		if (!csb0_reg && !web0_reg) begin
+			if (wmask0_reg[0])
+				mem[addr0_reg][7:0] = din0_reg[7:0];
+			if (wmask0_reg[1])
+				mem[addr0_reg][15:8] = din0_reg[15:8];
+			if (wmask0_reg[2])
+				mem[addr0_reg][23:16] = din0_reg[23:16];
+			if (wmask0_reg[3])
+				mem[addr0_reg][31:24] = din0_reg[31:24];
+		end
+	end
+	always @(negedge clk0) begin : MEM_READ0
+		if (!csb0_reg && web0_reg)
+			dout0 <= #(DELAY) mem[addr0_reg];
+	end
+	always @(negedge clk1) begin : MEM_READ1
+		if (!csb1_reg)
+			dout1 <= #(DELAY) mem[addr1_reg];
+	end
+endmodule
 module SortedList (
 	clk,
 	insert,
@@ -3313,6 +3394,29 @@ module SyncPulse (
 		dSyncReg1 = 1'b0;
 		dSyncReg2 = 1'b0;
 		dSyncPulse = 1'b0;
+	end
+endmodule
+module SyncResetA (
+	IN_RST,
+	CLK,
+	OUT_RST
+);
+	parameter RSTDELAY = 1;
+	input CLK;
+	input IN_RST;
+	output wire OUT_RST;
+	reg [RSTDELAY:0] reset_hold;
+	wire [RSTDELAY + 1:0] next_reset = {reset_hold, ~1'b0};
+	assign OUT_RST = reset_hold[RSTDELAY];
+	always @(posedge CLK or negedge IN_RST)
+		if (IN_RST == 1'b0)
+			reset_hold <= {RSTDELAY + 1 {1'b0}};
+		else
+			reset_hold <= next_reset[RSTDELAY:0];
+	initial begin
+		#(0)
+			;
+		reset_hold = {RSTDELAY + 1 {~1'b0}};
 	end
 endmodule
 module top (
@@ -4150,7 +4254,7 @@ module top (
 endmodule
 module wbsCtrl (
 	wb_clk_i,
-	wb_rst_i,
+	wb_rst_n_i,
 	wbs_stb_i,
 	wbs_cyc_i,
 	wbs_we_i,
@@ -4159,6 +4263,7 @@ module wbsCtrl (
 	wbs_adr_i,
 	wbs_ack_o,
 	wbs_dat_o,
+	wbs_usrclk_sel,
 	wbs_mode,
 	wbs_debug,
 	wbs_done,
@@ -4197,7 +4302,7 @@ module wbsCtrl (
 	parameter NUM_LEAVES = 64;
 	parameter LEAF_ADDRW = $clog2(NUM_LEAVES);
 	input wire wb_clk_i;
-	input wire wb_rst_i;
+	input wire wb_rst_n_i;
 	input wire wbs_stb_i;
 	input wire wbs_cyc_i;
 	input wire wbs_we_i;
@@ -4206,6 +4311,7 @@ module wbsCtrl (
 	input wire [31:0] wbs_adr_i;
 	output wire wbs_ack_o;
 	output wire [31:0] wbs_dat_o;
+	output reg wbs_usrclk_sel;
 	output reg wbs_mode;
 	output reg wbs_debug;
 	output reg wbs_done;
@@ -4241,6 +4347,7 @@ module wbsCtrl (
 	localparam WBS_LOAD_DONE_ADDR = 32'h30000014;
 	localparam WBS_SEND_DONE_ADDR = 32'h30000018;
 	localparam WBS_CFG_DONE_ADDR = 32'h3000001c;
+	localparam WBS_USRCLK_SEL_ADDR = 32'h30000020;
 	localparam WBS_QUERY_ADDR = 32'h30010000;
 	localparam WBS_LEAF_ADDR = 32'h30020000;
 	localparam WBS_BEST_ADDR = 32'h30030000;
@@ -4266,8 +4373,8 @@ module wbsCtrl (
 	assign wbs_valid = wbs_cyc_i & wbs_stb_i;
 	assign wbs_ack_o = wbs_ack_o_q;
 	assign wbs_dat_o = wbs_dat_o_q;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			currState <= 32'd0;
 		else
 			currState <= nextState;
@@ -4364,13 +4471,13 @@ module wbsCtrl (
 			end
 		endcase
 	end
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_valid_q <= 1'sb0;
 		else
 			wbs_valid_q <= wbs_valid;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i) begin
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i) begin
 			wbs_we_i_q <= 1'sb0;
 			wbs_sel_i_q <= 1'sb0;
 			wbs_dat_i_q <= 1'sb0;
@@ -4382,67 +4489,72 @@ module wbsCtrl (
 			wbs_dat_i_q <= wbs_dat_i;
 			wbs_adr_i_q <= wbs_adr_i;
 		end
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_dat_i_lower_q <= 1'sb0;
 		else
 			wbs_dat_i_lower_q <= wbs_dat_i_q;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_ack_o_q <= 1'sb0;
 		else
 			wbs_ack_o_q <= wbs_ack_o_d;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_dat_o_q <= 1'sb0;
 		else if (wbs_dat_o_d_valid)
 			wbs_dat_o_q <= wbs_dat_o_d;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_mode <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_MODE_ADDR))
 			wbs_mode <= wbs_dat_i_q[0];
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_debug <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_DEBUG_ADDR))
 			wbs_debug <= wbs_dat_i_q[0];
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_DONE_ADDR))
 			wbs_done <= wbs_dat_i_q[0];
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_fsm_start <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_FSM_START_ADDR))
 			wbs_fsm_start <= 1'b1;
 		else
 			wbs_fsm_start <= 1'b0;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_fsm_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_FSM_DONE_ADDR))
 			wbs_fsm_done <= 1'b0;
 		else if (acc_fsm_done)
 			wbs_fsm_done <= 1'b1;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_load_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_LOAD_DONE_ADDR))
 			wbs_load_done <= 1'b0;
 		else if (acc_load_done)
 			wbs_load_done <= 1'b1;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_send_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_SEND_DONE_ADDR))
 			wbs_send_done <= 1'b0;
 		else if (acc_send_done)
 			wbs_send_done <= 1'b1;
-	always @(posedge wb_clk_i or posedge wb_rst_i)
-		if (wb_rst_i)
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
 			wbs_cfg_done <= 1'sb0;
 		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_CFG_DONE_ADDR))
 			wbs_cfg_done <= wbs_dat_i_q[0];
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i)
+			wbs_usrclk_sel <= 1'sb0;
+		else if ((wbs_valid_q & wbs_we_i_q) & (wbs_adr_i_q == WBS_USRCLK_SEL_ADDR))
+			wbs_usrclk_sel <= wbs_dat_i_q[0];
 endmodule
