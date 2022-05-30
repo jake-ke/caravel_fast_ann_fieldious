@@ -403,7 +403,6 @@ module internal_node (
 	wdata,
 	patch_in,
 	patch_in_two,
-	patch_out,
 	valid_left,
 	valid_right,
 	valid_left_two,
@@ -420,7 +419,6 @@ module internal_node (
 	input [STORAGE_WIDTH - 1:0] wdata;
 	input [DATA_WIDTH - 1:0] patch_in;
 	input [DATA_WIDTH - 1:0] patch_in_two;
-	output wire [DATA_WIDTH - 1:0] patch_out;
 	output wire valid_left;
 	output wire valid_right;
 	output wire valid_left_two;
@@ -479,7 +477,6 @@ module internal_node (
 	assign valid_right = !comparison && valid;
 	assign valid_left_two = comparison_two && valid_two;
 	assign valid_right_two = !comparison_two && valid_two;
-	assign patch_out = patch_in;
 	assign rdata = {median, 8'b00000000, idx};
 endmodule
 module internal_node_tree (

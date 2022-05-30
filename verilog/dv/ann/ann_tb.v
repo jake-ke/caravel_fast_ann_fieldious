@@ -41,7 +41,9 @@ module ann_tb;
     reg                                 io_clk;
     reg                                 io_rst_n;
     reg                                 fsm_start;
+    wire                                load_done;
     wire                                fsm_done;
+    wire                                send_done;
     reg                                 send_best_arr;
     reg                                 load_kdtree;
     reg                                 in_fifo_wenq;
@@ -55,21 +57,23 @@ module ann_tb;
     wire                                wbs_cfg_done;
 
 
-    assign mprj_io[0] = io_clk;
-    assign mprj_io[1] = io_rst_n;
-    assign mprj_io[2] = in_fifo_wenq;
-    assign mprj_io[13:3] = in_fifo_wdata;
-    assign mprj_io[14] = out_fifo_deq;
+    assign mprj_io[13] = io_clk;
+    assign mprj_io[14] = io_rst_n;
+    assign mprj_io[0] = in_fifo_wenq;
+    assign mprj_io[11:1] = in_fifo_wdata;
+    assign in_fifo_wfull_n = mprj_io[12];
     assign mprj_io[15] = fsm_start;
     assign mprj_io[16] = send_best_arr;
     assign mprj_io[17] = load_kdtree;
-    assign in_fifo_wfull_n = mprj_io[18];
-    assign out_fifo_rdata = mprj_io[29:19];
-    assign out_fifo_rempty_n = mprj_io[30];
-    assign fsm_done = mprj_io[31];
-    assign wbs_done = mprj_io[32];
-    assign wbs_busy = mprj_io[33];
-    assign wbs_cfg_done = mprj_io[34];
+    assign load_done = mprj_io[18];
+    assign fsm_done = mprj_io[19];
+    assign send_done = mprj_io[20];
+    assign wbs_done = mprj_io[21];
+    assign wbs_busy = mprj_io[22];
+    assign wbs_cfg_done = mprj_io[23];
+    assign mprj_io[25] = out_fifo_deq;
+    assign out_fifo_rdata = mprj_io[36:26];
+    assign out_fifo_rempty_n = mprj_io[37];
 
     // External clock is used by default.  Make this artificially fast for the
     // simulation.  Normally this would be a slow clock and the digital PLL
@@ -159,6 +163,7 @@ module ann_tb;
         io_rst_n = 0;
         #20
         io_rst_n = 1'b1;
+        #40
 
         // start load kd tree internal nodes and leaves
         @(negedge io_clk) load_kdtree = 1'b1;
@@ -302,21 +307,21 @@ module ann_tb;
         `endif
     end
 
-    // initial begin
-    //     // Repeat cycles of 1000 clock edges as needed to complete testbench
-    //     repeat (70) begin
-    //         repeat (1000) @(posedge clock);
-    //         $display("+1000 cycles");
-    //     end
-    //     $display("%c[1;31m",27);
-    //     `ifdef GL
-    //         $display ("Monitor: Timeout, Test Mega-Project WB Port (GL) Failed");
-    //     `else
-    //         $display ("Monitor: Timeout, Test Mega-Project WB Port (RTL) Failed");
-    //     `endif
-    //     $display("%c[0m",27);
-    //     $finish;
-    // end
+    initial begin
+        // Repeat cycles of 1000 clock edges as needed to complete testbench
+        repeat (200) begin
+            repeat (1000) @(posedge clock);
+            $display("+1000 cycles");
+        end
+        $display("%c[1;31m",27);
+        `ifdef GL
+            $display ("Monitor: Timeout, Test Mega-Project WB Port (GL) Failed");
+        `else
+            $display ("Monitor: Timeout, Test Mega-Project WB Port (RTL) Failed");
+        `endif
+        $display("%c[0m",27);
+        $finish;
+    end
 
     initial begin
         $display("Monitor: MPRJ-Logic WB Started");
