@@ -3541,12 +3541,18 @@ endmodule
 module top (
 	clk,
 	rst_n,
-	load_kdtree,
-	load_done,
-	fsm_start,
-	fsm_done,
-	send_best_arr,
-	send_done,
+	io_load_kdtree,
+	io_fsm_start,
+	io_send_best_arr,
+	io_load_done,
+	io_fsm_done,
+	io_send_done,
+	wb_clk_i,
+	wb_rst_n_i,
+	wbs_fsm_start,
+	wbs_load_done,
+	wbs_fsm_done,
+	wbs_send_done,
 	io_clk,
 	io_rst_n,
 	in_fifo_wenq,
@@ -3590,20 +3596,26 @@ module top (
 	parameter LEAF_ADDRW = $clog2(NUM_LEAVES);
 	input wire clk;
 	input wire rst_n;
-	input wire load_kdtree;
-	output reg load_done;
-	input wire fsm_start;
-	output reg fsm_done;
-	input wire send_best_arr;
-	output reg send_done;
+	input wire io_load_kdtree;
+	input wire io_fsm_start;
+	input wire io_send_best_arr;
+	output reg io_load_done;
+	output reg io_fsm_done;
+	output reg io_send_done;
+	input wire wb_clk_i;
+	input wire wb_rst_n_i;
+	input wire wbs_fsm_start;
+	output reg wbs_load_done;
+	output reg wbs_fsm_done;
+	output reg wbs_send_done;
 	input wire io_clk;
 	input wire io_rst_n;
 	input wire in_fifo_wenq;
 	input wire [DATA_WIDTH - 1:0] in_fifo_wdata;
-	output wire in_fifo_wfull_n;
+	output reg in_fifo_wfull_n;
 	input wire out_fifo_deq;
-	output wire [DATA_WIDTH - 1:0] out_fifo_rdata;
-	output wire out_fifo_rempty_n;
+	output reg [DATA_WIDTH - 1:0] out_fifo_rdata;
+	output reg out_fifo_rempty_n;
 	input wire wbs_debug;
 	input wire wbs_qp_mem_csb0;
 	input wire wbs_qp_mem_web0;
@@ -3623,12 +3635,29 @@ module top (
 	input wire [5:0] wbs_node_mem_addr;
 	input wire [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_wdata;
 	output wire [(2 * DATA_WIDTH) - 1:0] wbs_node_mem_rdata;
-	reg load_kdtree_r;
+	reg in_fifo_wenq_r;
+	reg [DATA_WIDTH - 1:0] in_fifo_wdata_r;
+	wire in_fifo_wfull_n_w;
+	reg out_fifo_deq_r;
+	wire [DATA_WIDTH - 1:0] out_fifo_rdata_w;
+	wire out_fifo_rempty_n_w;
 	wire load_done_w;
-	reg fsm_start_r;
 	wire fsm_done_w;
-	reg send_best_arr_r;
 	wire send_done_w;
+	reg io_load_kdtree_r;
+	reg io_fsm_start_r;
+	reg io_send_best_arr_r;
+	wire io_load_kdtree_synced;
+	wire io_load_done_synced;
+	wire io_fsm_start_synced;
+	wire io_fsm_done_synced;
+	wire io_send_best_arr_synced;
+	wire io_send_done_synced;
+	reg wbs_fsm_start_r;
+	wire wbs_fsm_start_synced;
+	wire wbs_load_done_synced;
+	wire wbs_fsm_done_synced;
+	wire wbs_send_done_synced;
 	wire in_fifo_deq;
 	wire [DATA_WIDTH - 1:0] in_fifo_rdata;
 	wire in_fifo_rempty_n;
@@ -3859,23 +3888,118 @@ module top (
 	wire [(LEAF_ADDRW + IDX_WIDTH) - 1:0] sl1_merged_idx_2;
 	wire [(LEAF_ADDRW + IDX_WIDTH) - 1:0] sl1_merged_idx_3;
 	wire [(K * LEAF_ADDRW) - 1:0] computes1_leaf_idx;
-	always @(posedge clk or negedge rst_n)
-		if (~rst_n) begin
-			load_kdtree_r <= 1'sb0;
-			fsm_start_r <= 1'sb0;
-			send_best_arr_r <= 1'sb0;
-			load_done <= 1'sb0;
-			fsm_done <= 1'sb0;
-			send_done <= 1'sb0;
+	always @(posedge io_clk or negedge io_rst_n)
+		if (~io_rst_n) begin
+			io_load_kdtree_r <= 1'sb0;
+			io_fsm_start_r <= 1'sb0;
+			io_send_best_arr_r <= 1'sb0;
+			io_load_done <= 1'sb0;
+			io_fsm_done <= 1'sb0;
+			io_send_done <= 1'sb0;
+			in_fifo_wenq_r <= 1'sb0;
+			in_fifo_wdata_r <= 1'sb0;
+			in_fifo_wfull_n <= 1'sb0;
+			out_fifo_deq_r <= 1'sb0;
+			out_fifo_rdata <= 1'sb0;
+			out_fifo_rempty_n <= 1'sb0;
 		end
 		else begin
-			load_kdtree_r <= load_kdtree;
-			fsm_start_r <= fsm_start;
-			send_best_arr_r <= send_best_arr;
-			load_done <= load_done_w;
-			fsm_done <= fsm_done_w;
-			send_done <= send_done_w;
+			io_load_kdtree_r <= io_load_kdtree;
+			io_fsm_start_r <= io_fsm_start;
+			io_send_best_arr_r <= io_send_best_arr;
+			io_load_done <= io_load_done_synced;
+			io_fsm_done <= io_fsm_done_synced;
+			io_send_done <= io_send_done_synced;
+			in_fifo_wenq_r <= in_fifo_wenq;
+			in_fifo_wdata_r <= in_fifo_wdata;
+			in_fifo_wfull_n <= in_fifo_wfull_n_w;
+			out_fifo_deq_r <= out_fifo_deq;
+			out_fifo_rdata <= out_fifo_rdata_w;
+			out_fifo_rempty_n <= out_fifo_rempty_n_w;
 		end
+	always @(posedge wb_clk_i or negedge wb_rst_n_i)
+		if (~wb_rst_n_i) begin
+			wbs_fsm_start_r <= 1'sb0;
+			wbs_load_done <= 1'sb0;
+			wbs_fsm_done <= 1'sb0;
+			wbs_send_done <= 1'sb0;
+		end
+		else begin
+			wbs_fsm_start_r <= wbs_fsm_start;
+			wbs_load_done <= wbs_load_done_synced;
+			wbs_fsm_done <= wbs_fsm_done_synced;
+			wbs_send_done <= wbs_send_done_synced;
+		end
+	SyncPulse io_fsm_start_sync(
+		.sCLK(io_clk),
+		.sRST(io_rst_n),
+		.sEN(io_fsm_start_r),
+		.dCLK(clk),
+		.dPulse(io_fsm_start_synced)
+	);
+	SyncPulse io_load_kdtree_sync(
+		.sCLK(io_clk),
+		.sRST(io_rst_n),
+		.sEN(io_load_kdtree_r),
+		.dCLK(clk),
+		.dPulse(io_load_kdtree_synced)
+	);
+	SyncPulse io_send_best_arr_sync(
+		.sCLK(io_clk),
+		.sRST(io_rst_n),
+		.sEN(io_send_best_arr_r),
+		.dCLK(clk),
+		.dPulse(io_send_best_arr_synced)
+	);
+	SyncPulse io_fsm_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(fsm_done_w),
+		.dCLK(io_clk),
+		.dPulse(io_fsm_done_synced)
+	);
+	SyncPulse io_load_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(load_done_w),
+		.dCLK(io_clk),
+		.dPulse(io_load_done_synced)
+	);
+	SyncPulse io_send_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(send_done_w),
+		.dCLK(io_clk),
+		.dPulse(io_send_done_synced)
+	);
+	SyncPulse wbs_fsm_start_sync(
+		.sCLK(wb_clk_i),
+		.sRST(wb_rst_n_i),
+		.sEN(wbs_fsm_start_r),
+		.dCLK(clk),
+		.dPulse(wbs_fsm_start_synced)
+	);
+	SyncPulse wbs_fsm_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(fsm_done_w),
+		.dCLK(wb_clk_i),
+		.dPulse(wbs_fsm_done_synced)
+	);
+	SyncPulse wbs_load_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(load_done_w),
+		.dCLK(wb_clk_i),
+		.dPulse(wbs_load_done_synced)
+	);
+	SyncPulse wbs_send_done_sync(
+		.sCLK(clk),
+		.sRST(rst_n),
+		.sEN(send_done_w),
+		.dCLK(wb_clk_i),
+		.dPulse(wbs_send_done_synced)
+	);
 	MainFSM #(
 		.DATA_WIDTH(DATA_WIDTH),
 		.LEAF_SIZE(LEAF_SIZE),
@@ -3888,12 +4012,12 @@ module top (
 	) main_fsm_inst(
 		.clk(clk),
 		.rst_n(rst_n),
-		.load_kdtree(load_kdtree_r),
+		.load_kdtree(io_load_kdtree_synced),
 		.load_done(load_done_w),
-		.fsm_start(fsm_start_r),
+		.fsm_start(io_fsm_start_synced | wbs_fsm_start_synced),
 		.fsm_done(fsm_done_w),
 		.send_done(send_done_w),
-		.send_best_arr(send_best_arr_r),
+		.send_best_arr(io_send_best_arr_synced),
 		.agg_receiver_enq(agg_receiver_enq),
 		.agg_receiver_full_n(agg_receiver_full_n),
 		.agg_change_fetch_width(agg_change_fetch_width),
@@ -3945,9 +4069,9 @@ module top (
 	) input_fifo_inst(
 		.sCLK(io_clk),
 		.sRST(io_rst_n),
-		.sENQ(in_fifo_wenq),
-		.sD_IN(in_fifo_wdata),
-		.sFULL_N(in_fifo_wfull_n),
+		.sENQ(in_fifo_wenq_r),
+		.sD_IN(in_fifo_wdata_r),
+		.sFULL_N(in_fifo_wfull_n_w),
 		.dCLK(clk),
 		.dDEQ(in_fifo_deq),
 		.dD_OUT(in_fifo_rdata),
@@ -3987,9 +4111,9 @@ module top (
 		.sD_IN(out_fifo_wdata),
 		.sFULL_N(out_fifo_wfull_n),
 		.dCLK(io_clk),
-		.dDEQ(out_fifo_deq),
-		.dD_OUT(out_fifo_rdata),
-		.dEMPTY_N(out_fifo_rempty_n)
+		.dDEQ(out_fifo_deq_r),
+		.dD_OUT(out_fifo_rdata_w),
+		.dEMPTY_N(out_fifo_rempty_n_w)
 	);
 	always @(*)
 		case (out_fifo_wdata_sel)

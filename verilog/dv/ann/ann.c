@@ -173,6 +173,8 @@ void main()
 
     bool debug_mem = true;
     if (debug_mem){
+        while(reg_mprj_cfg_load_done==0);
+        while(reg_mprj_cfg_fsm_done==0);
         while(reg_mprj_cfg_send_done==0);
 
         // enable debug mode to load/store data

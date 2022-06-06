@@ -57,11 +57,11 @@ module ann_tb;
     wire                                wbs_cfg_done;
 
 
-    assign mprj_io[13] = io_clk;
-    assign mprj_io[14] = io_rst_n;
-    assign mprj_io[0] = in_fifo_wenq;
-    assign mprj_io[11:1] = in_fifo_wdata;
-    assign in_fifo_wfull_n = mprj_io[12];
+    assign mprj_io[0] = io_clk;
+    assign mprj_io[1] = io_rst_n;
+    assign mprj_io[2] = in_fifo_wenq;
+    assign mprj_io[13:3] = in_fifo_wdata;
+    assign in_fifo_wfull_n = mprj_io[14];
     assign mprj_io[15] = fsm_start;
     assign mprj_io[16] = send_best_arr;
     assign mprj_io[17] = load_kdtree;
@@ -109,6 +109,7 @@ module ann_tb;
     integer i;
     integer px;
     integer agg;
+    reg sent;
 
     initial begin
         $timeformat(-9, 2, "ns", 20);
@@ -213,7 +214,8 @@ module ann_tb;
         $display("[T=%0t] Finished sending queries", $realtime);
         querytime = $realtime - simtime;
 
-        #100;  // can be replaced by send_done
+        wait(load_done);
+        #100;  // can be replaced by load_done
 
         //start algorithm
         @(negedge io_clk) fsm_start = 1'b1;
@@ -235,23 +237,37 @@ module ann_tb;
         simtime = $realtime;
         @(negedge io_clk) send_best_arr = 1'b0;
 
+        // #1000; // test for continuous and uncontinuous rempty_n
+
+        sent=0;
         for(px=0; px<2; px=px+1) begin
             for(x=0; x<4; x=x+1) begin
                 // for(x=0; x<(ROW_SIZE/2/BLOCKING); x=x+1) begin  // for row_size = 24
                 for(y=0; y<COL_SIZE; y=y+1) begin
                     for(xi=0; xi<BLOCKING; xi=xi+1) begin
                         if ((x != 3) || (xi < 1)) begin  // for row_size = 26
-                            wait(out_fifo_rempty_n);
-                            @(negedge io_clk)
-                            out_fifo_deq = 1'b1;
-                            addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
-                            received_idx[addr] = out_fifo_rdata;
-                            @(posedge io_clk); #1;
+                            while(sent == 0) begin 
+                                @(negedge io_clk)
+                                if (out_fifo_rempty_n) begin
+                                    out_fifo_deq = 1'b1;
+                                    addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
+                                    received_idx[addr] = out_fifo_rdata;
+                                    // $display("addr %d, rdata %d", addr, out_fifo_rdata);
+                                    @(negedge io_clk)
+                                    out_fifo_deq = 1'b0;
+                                    @(negedge io_clk);
+                                    sent = 1;
+                                end else out_fifo_deq = 1'b0;
+                            end
+                            sent = 0;
                         end
                     end
                 end
             end
         end
+
+        @(negedge io_clk) out_fifo_deq = 1'b0;
+        // #1000;
 
         for(px=0; px<2; px=px+1) begin
             for(x=0; x<4; x=x+1) begin
@@ -260,12 +276,19 @@ module ann_tb;
                     for(xi=0; xi<BLOCKING; xi=xi+1) begin
                         for(agg=0; agg<=1; agg=agg+1) begin  // most significant first
                             if ((x != 3) || (xi < 1)) begin  // for row_size = 26
-                                wait(out_fifo_rempty_n);
-                                @(negedge io_clk)
-                                out_fifo_deq = 1'b1;
-                                addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
-                                received_dist[addr][agg*DATA_WIDTH+:DATA_WIDTH] = out_fifo_rdata;
-                                @(posedge io_clk); #1;
+                                while(sent == 0) begin
+                                    @(negedge io_clk)
+                                    if (out_fifo_rempty_n) begin
+                                        out_fifo_deq = 1'b1;
+                                        addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
+                                        received_dist[addr][agg*DATA_WIDTH+:DATA_WIDTH] = out_fifo_rdata;
+                                        @(negedge io_clk)
+                                        out_fifo_deq = 1'b0;
+                                        @(negedge io_clk);
+                                        sent = 1;
+                                    end else out_fifo_deq = 1'b0;
+                                end
+                                sent = 0;
                             end
                         end
                     end
@@ -300,11 +323,6 @@ module ann_tb;
         $display("Query patches: %t", querytime);
         $display("Main Algorithm: %t", fsmtime);
         $display("Outputs: %t", outputtime);
-        `ifdef GL
-            $display("Monitor: Mega-Project WB (GL) Passed");
-        `else
-            $display("Monitor: Mega-Project WB (RTL) Passed");
-        `endif
     end
 
     initial begin
@@ -325,7 +343,13 @@ module ann_tb;
 
     initial begin
         $display("Monitor: MPRJ-Logic WB Started");
+        wait(send_done == 1);
         wait(wbs_done == 1);
+        `ifdef GL
+            $display("Monitor: Mega-Project WB (GL) Passed");
+        `else
+            $display("Monitor: Mega-Project WB (RTL) Passed");
+        `endif
         $finish;
     end
 

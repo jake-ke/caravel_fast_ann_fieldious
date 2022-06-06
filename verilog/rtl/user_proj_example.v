@@ -117,6 +117,9 @@ module user_proj_example #(
     wire                                                    wbs_busy_synced;
     wire                                                    wbs_done_synced;
     wire                                                    wbs_cfg_done_synced;
+    reg                                                     wbs_busy_synced_r;
+    reg                                                     wbs_done_synced_r;
+    reg                                                     wbs_cfg_done_synced_r;
     wire                                                    fsm_start;
     wire                                                    fsm_done;
     wire                                                    send_best_arr;
@@ -139,17 +142,17 @@ module user_proj_example #(
     assign io_oeb = la_data_in[0] ?{38{la_data_in[1]}} :io_oeb_user;
 
     // define all user IO pin locations
-    assign in_fifo_wenq = io_in[0];
-    assign in_fifo_wdata = io_in[11:1];
-    assign io_out_user[11:0] = 12'd0;
-    assign io_oeb_user[11:0] = {12{1'b1}};
-    assign io_out_user[12] = in_fifo_wfull_n;
-    assign io_oeb_user[12] = 1'b0;
+    assign io_clk = io_in[0];
+    assign io_rst_n = io_in[1];
+    assign io_out_user[1:0] = 2'd0;
+    assign io_oeb_user[1:0] = {2{1'b1}};
 
-    assign io_clk = io_in[13];
-    assign io_rst_n = io_in[14];
-    assign io_out_user[14:13] = 2'd0;
-    assign io_oeb_user[14:13] = {2{1'b1}};
+    assign in_fifo_wenq = io_in[2];
+    assign in_fifo_wdata = io_in[13:3];
+    assign io_out_user[13:2] = 12'd0;
+    assign io_oeb_user[13:2] = {12{1'b1}};
+    assign io_out_user[14] = in_fifo_wfull_n;
+    assign io_oeb_user[14] = 1'b0;
 
     assign fsm_start = io_in[15];
     assign send_best_arr = io_in[16];
@@ -159,9 +162,9 @@ module user_proj_example #(
     assign io_out_user[18] = load_done;
     assign io_out_user[19] = fsm_done;
     assign io_out_user[20] = send_done;
-    assign io_out_user[21] = wbs_done_synced;
-    assign io_out_user[22] = wbs_busy_synced;
-    assign io_out_user[23] = wbs_cfg_done_synced;
+    assign io_out_user[21] = wbs_done_synced_r;
+    assign io_out_user[22] = wbs_busy_synced_r;
+    assign io_out_user[23] = wbs_cfg_done_synced_r;
     assign io_oeb_user[23:18] = {6{1'b0}};
 	// unused
 	assign io_out_user[24] = 1'b0;
@@ -284,12 +287,19 @@ module user_proj_example #(
         .clk(clkmux_clk),
         .rst_n(usr_rst_n_sync),
 
-        .load_kdtree(load_kdtree),
-        .load_done(load_done),
-        .fsm_start(fsm_start | wbs_fsm_start_synced),
-        .fsm_done(fsm_done),
-        .send_best_arr(send_best_arr),
-        .send_done(send_done),
+        .io_load_kdtree(load_kdtree),
+        .io_load_done(load_done),
+        .io_fsm_start(fsm_start),
+        .io_fsm_done(fsm_done),
+        .io_send_best_arr(send_best_arr),
+        .io_send_done(send_done),
+
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_n_i(wb_rst_n_sync),
+        .wbs_fsm_start(wbs_fsm_start_synced),
+        .wbs_load_done(load_done_synced),
+        .wbs_fsm_done(fsm_done_synced),
+        .wbs_send_done(send_done_synced),
 
         .io_clk(io_clk),
         .io_rst_n(io_rst_n),
@@ -321,38 +331,6 @@ module user_proj_example #(
         .wbs_best_arr_rdata1                    (wbs_best_arr_rdata1)
     );
 
-    SyncPulse fsm_start_sync (
-        .sCLK(wb_clk_i),
-        .sRST(),  // not needed
-        .sEN(wbs_fsm_start),
-        .dCLK(clkmux_clk),
-        .dPulse(wbs_fsm_start_synced)
-    );
-
-    SyncPulse fsm_done_sync (
-        .sCLK(clkmux_clk),
-        .sRST(),  // not needed
-        .sEN(fsm_done),
-        .dCLK(wb_clk_i),
-        .dPulse(fsm_done_synced)
-    );
-
-    SyncPulse load_done_sync (
-        .sCLK(clkmux_clk),
-        .sRST(),  // not needed
-        .sEN(load_done),
-        .dCLK(wb_clk_i),
-        .dPulse(load_done_synced)
-    );
-
-    SyncPulse send_done_sync (
-        .sCLK(clkmux_clk),
-        .sRST(),  // not needed
-        .sEN(send_done),
-        .dCLK(wb_clk_i),
-        .dPulse(send_done_synced)
-    );
-
     SyncBit wbs_mode_sync (
         .sCLK(wb_clk_i),
         .sRST(wb_rst_n_sync),
@@ -379,6 +357,18 @@ module user_proj_example #(
         .dCLK(io_clk),
         .dD_OUT(wbs_cfg_done_synced)
     );
+
+    always @(posedge io_clk, negedge io_rst_n) begin
+        if (~io_rst_n) begin
+            wbs_busy_synced_r <= 1'b0;
+            wbs_done_synced_r <= 1'b0;
+            wbs_cfg_done_synced_r <= 1'b0;
+        end else begin
+            wbs_busy_synced_r <= wbs_busy_synced;
+            wbs_done_synced_r <= wbs_done_synced;
+            wbs_cfg_done_synced_r <= wbs_cfg_done_synced;
+        end
+    end
 
 
 endmodule
