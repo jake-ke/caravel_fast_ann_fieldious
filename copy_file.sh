@@ -2,10 +2,12 @@
 
 # Setting paths
 top="user_proj_example"
-base_dir="/home/users/jakeke/Synthesis-Fast-ANN-Fieldious/skywater-digital-flow/FastANNFieldiousCaravel"
+# base_dir="/home/users/jakeke/Synthesis-Fast-ANN-Fieldious/skywater-digital-flow/FastANNFieldiousCaravel"
+base_dir="/home/users/jakeke/synth_top_2/skywater-digital-flow/FastANNFieldiousCaravel"
 build_target="build"
 
-gds_path="$base_dir/$build_target/*-signoff/outputs/design-merged.gds"
+gds_path="$base_dir/$build_target/*-gdsmerge/design_merged.gds"
+# gds_path="/home/users/jakeke/Synthesis-Fast-ANN-Fieldious/skywater-digital-flow/FastANNFieldiousCaravel/build/21-mentor-calibre-gdsmerge/design_merged.gds"
 lef_path="$base_dir/$build_target/*-signoff/outputs/design.lef"
 def_path="$base_dir/$build_target/*-signoff/outputs/design.def.gz"
 gl_path="$base_dir/$build_target/*-signoff/outputs/design.vcs.v"
