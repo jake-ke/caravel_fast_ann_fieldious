@@ -174,8 +174,19 @@ void main()
     bool debug_mem = true;
     if (debug_mem){
         while(reg_mprj_cfg_load_done==0);
+        reg_mprj_cfg_load_done = 0;
         while(reg_mprj_cfg_fsm_done==0);
+        reg_mprj_cfg_fsm_done = 0;
         while(reg_mprj_cfg_send_done==0);
+        reg_mprj_cfg_send_done = 0;
+        
+        // if doing at least 2 tests
+        while(reg_mprj_cfg_load_done==0);
+        reg_mprj_cfg_load_done = 0;
+        while(reg_mprj_cfg_fsm_done==0);
+        reg_mprj_cfg_fsm_done = 0;
+        while(reg_mprj_cfg_send_done==0);
+        reg_mprj_cfg_send_done = 0;
 
         // enable debug mode to load/store data
         reg_mprj_cfg_mode = 1;

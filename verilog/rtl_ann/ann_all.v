@@ -1172,16 +1172,16 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_2
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p0_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p0_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p0_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p0_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
-	function automatic [21:0] sv2v_cast_22;
-		input reg [21:0] inp;
-		sv2v_cast_22 = inp;
+	function automatic signed [21:0] sv2v_cast_22_signed;
+		input reg signed [21:0] inp;
+		sv2v_cast_22_signed = inp;
 	endfunction
 	always @(*) begin : sv2v_autoblock_3
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p0_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p0_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p0_patch_diff[sv2v_cast_3(p)]);
+			p0_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p0_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p0_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_4
@@ -1266,12 +1266,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_7
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p1_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p1_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p1_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p1_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_8
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p1_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p1_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p1_patch_diff[sv2v_cast_3(p)]);
+			p1_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p1_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p1_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_9
@@ -1344,12 +1344,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_12
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p2_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p2_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p2_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p2_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_13
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p2_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p2_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p2_patch_diff[sv2v_cast_3(p)]);
+			p2_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p2_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p2_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_14
@@ -1422,12 +1422,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_17
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p3_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p3_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p3_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p3_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_18
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p3_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p3_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p3_patch_diff[sv2v_cast_3(p)]);
+			p3_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p3_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p3_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_19
@@ -1500,12 +1500,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_22
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p4_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p4_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p4_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p4_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_23
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p4_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p4_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p4_patch_diff[sv2v_cast_3(p)]);
+			p4_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p4_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p4_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_24
@@ -1578,12 +1578,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_27
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p5_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p5_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p5_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p5_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_28
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p5_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p5_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p5_patch_diff[sv2v_cast_3(p)]);
+			p5_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p5_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p5_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_29
@@ -1656,12 +1656,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_32
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p6_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p6_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p6_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p6_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_33
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p6_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p6_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p6_patch_diff[sv2v_cast_3(p)]);
+			p6_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p6_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p6_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_34
@@ -1734,12 +1734,12 @@ module L2Kernel (
 		else if (valid_shft[0]) begin : sv2v_autoblock_37
 			reg [31:0] p;
 			for (p = 0; p < 5; p = p + 1)
-				p7_patch_diff[sv2v_cast_3(p)] <= query_patch_in_r[sv2v_cast_3(p) * 11+:11] - p7_data_in_r[sv2v_cast_3(p) * 11+:11];
+				p7_patch_diff[sv2v_cast_3(p)] <= $signed(query_patch_in_r[sv2v_cast_3(p) * 11+:11]) - $signed(p7_data_in_r[sv2v_cast_3(p) * 11+:11]);
 		end
 	always @(*) begin : sv2v_autoblock_38
 		reg [31:0] p;
 		for (p = 0; p < 5; p = p + 1)
-			p7_diff2[sv2v_cast_3(p)] = sv2v_cast_22(p7_patch_diff[sv2v_cast_3(p)]) * sv2v_cast_22(p7_patch_diff[sv2v_cast_3(p)]);
+			p7_diff2[sv2v_cast_3(p)] = sv2v_cast_22_signed($signed(p7_patch_diff[sv2v_cast_3(p)])) * sv2v_cast_22_signed($signed(p7_patch_diff[sv2v_cast_3(p)]));
 	end
 	always @(posedge clk or negedge rst_n)
 		if (~rst_n) begin : sv2v_autoblock_39
@@ -1895,8 +1895,8 @@ module MainFSM (
 	parameter DATA_WIDTH = 11;
 	parameter LEAF_SIZE = 8;
 	parameter PATCH_SIZE = 5;
-	parameter ROW_SIZE = 26;
-	parameter COL_SIZE = 19;
+	parameter ROW_SIZE = 32;
+	parameter COL_SIZE = 16;
 	parameter NUM_QUERYS = ROW_SIZE * COL_SIZE;
 	parameter K = 4;
 	parameter NUM_LEAVES = 64;
@@ -2322,7 +2322,7 @@ module MainFSM (
 			end
 			32'd15: begin
 				counter_en = 1'b1;
-				counter_in = 11;
+				counter_in = 12;
 				if (counter_done) begin
 					nextState = 32'd0;
 					fsm_done = 1'b1;
@@ -3587,8 +3587,8 @@ module top (
 	parameter IDX_WIDTH = 9;
 	parameter LEAF_SIZE = 8;
 	parameter PATCH_SIZE = 5;
-	parameter ROW_SIZE = 26;
-	parameter COL_SIZE = 19;
+	parameter ROW_SIZE = 32;
+	parameter COL_SIZE = 16;
 	parameter NUM_QUERYS = ROW_SIZE * COL_SIZE;
 	parameter K = 4;
 	parameter BEST_ARRAY_K = 1;
@@ -4547,8 +4547,8 @@ module wbsCtrl (
 	parameter IDX_WIDTH = 9;
 	parameter LEAF_SIZE = 8;
 	parameter PATCH_SIZE = 5;
-	parameter ROW_SIZE = 26;
-	parameter COL_SIZE = 19;
+	parameter ROW_SIZE = 32;
+	parameter COL_SIZE = 16;
 	parameter NUM_QUERYS = ROW_SIZE * COL_SIZE;
 	parameter K = 4;
 	parameter NUM_LEAVES = 64;

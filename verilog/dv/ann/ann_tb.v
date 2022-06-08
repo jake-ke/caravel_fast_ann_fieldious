@@ -21,8 +21,8 @@ module ann_tb;
     parameter DATA_WIDTH = 11;
     parameter LEAF_SIZE = 8;
     parameter PATCH_SIZE = 5;
-    parameter ROW_SIZE = 26;
-    parameter COL_SIZE = 19;
+    parameter ROW_SIZE = 32;
+    parameter COL_SIZE = 16;
     parameter NUM_QUERYS = ROW_SIZE * COL_SIZE;
     parameter NUM_LEAVES = 64;
     parameter NUM_NODES = NUM_LEAVES - 1;
@@ -106,6 +106,7 @@ module ann_tb;
     real querytime;
     real fsmtime;
     real outputtime;
+    integer q;
     integer i;
     integer px;
     integer agg;
@@ -116,172 +117,150 @@ module ann_tb;
         $dumpfile("ann.vcd");
         $dumpvars(0, ann_tb);
 
-        // basketball1
-        expected_idx_data_file = $fopen("expectedIndex.txt", "r");
-        // expected_idx_data_file = $fopen("data/IO_data/topToBottomLeafIndex.txt", "r");
+        // 126 vidpairs
+        expected_idx_data_file = $fopen("inputs/expectedIndex.txt", "r");
         if (expected_idx_data_file == 0) begin
             $display("expected_idx_data_file handle was NULL");
             $finish;
         end
-        for(i=0; i<NUM_QUERYS; i=i+1) begin
-            scan_file = $fscanf(expected_idx_data_file, "%d\n", expected_idx[i]);
-        end
-
-        int_nodes_data_file = $fopen("internalNodes.txt", "r");
+        
+        int_nodes_data_file = $fopen("inputs/internalNodes.txt", "r");
         if (int_nodes_data_file == 0) begin
             $display("int_nodes_data_file handle was NULL");
             $finish;
         end
         
-        leaves_data_file = $fopen("leafNodes.txt", "r");
+        leaves_data_file = $fopen("inputs/leafNodes.txt", "r");
         if (leaves_data_file == 0) begin
             $display("leaves_data_file handle was NULL");
             $finish;
         end
-
-        query_data_file = $fopen("patches.txt", "r");
+        
+        query_data_file = $fopen("inputs/patches.txt", "r");
         if (query_data_file == 0) begin
             $display("query_data_file handle was NULL");
             $finish;
         end
 
-        
-        fsm_start = 0;
-        send_best_arr = 0;
-        load_kdtree = 0;
-        io_rst_n = 1'b1;
-        in_fifo_wenq = 0;
-        in_fifo_wdata = 11'd0;
-        out_fifo_deq = 0;
-
-
-        // wait for mgmt soc to finish configuring the io ports
-        wait(wbs_cfg_done);
-
-
-        // reset accelerator
-        #100
-        io_rst_n = 0;
-        #20
-        io_rst_n = 1'b1;
-        #40
-
-        // start load kd tree internal nodes and leaves
-        @(negedge io_clk) load_kdtree = 1'b1;
-        simtime = $realtime;
-        $display("[T=%0t] Start sending KD tree internal nodes and leaves", $realtime);
-        @(negedge io_clk) load_kdtree = 1'b0;
-
-        // send internal nodes, 2 lines per node
-        // index
-        // median
-        for(i=0; i<NUM_NODES*2; i=i+1) begin
-            @(negedge io_clk)
-            in_fifo_wenq = 1'b1;
-            scan_file = $fscanf(int_nodes_data_file, "%d\n", in_fifo_wdata[10:0]);
-        end
-        @(negedge io_clk)
-        in_fifo_wenq = 0;
-        in_fifo_wdata = 11'd0;
-
-        // send leaves, 6*8 lines per leaf
-        // 8 patches per leaf
-        // each patch has 5 lines of data
-        // and 1 line of patch index in the original image (for reconstruction)
-        for(i=0; i<NUM_LEAVES*6*8; i=i+1) begin
-            @(negedge io_clk)
-            in_fifo_wenq = 1'b1;
-            scan_file = $fscanf(leaves_data_file, "%d\n", in_fifo_wdata[10:0]);
-        end
-        @(negedge io_clk)
-        in_fifo_wenq = 0;
-        in_fifo_wdata = 11'd0;
-        $display("[T=%0t] Finished sending KD tree internal nodes and leaves", $realtime);
-        kdtreetime = $realtime - simtime;
-        
-        $display("[T=%0t] Start sending queries", $realtime);
-        simtime = $realtime;
-        // send query patches, 5 lines per query patch
-        // each patch has 5 lines of data
-        for(i=0; i<NUM_QUERYS*5; i=i+1) begin
-            @(negedge io_clk)
-            in_fifo_wenq = 1'b1;
-            scan_file = $fscanf(query_data_file, "%d\n", in_fifo_wdata[10:0]);
-        end
-        @(negedge io_clk)
-        in_fifo_wenq = 0;
-        in_fifo_wdata = 11'd0;
-        $display("[T=%0t] Finished sending queries", $realtime);
-        querytime = $realtime - simtime;
-
-        wait(load_done);
-        #100;  // can be replaced by load_done
-
-        //start algorithm
-        @(negedge io_clk) fsm_start = 1'b1;
-        $display("[T=%0t] Start algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
-        simtime = $realtime;
-        @(negedge io_clk) fsm_start = 1'b0;
-
-        wait(fsm_done == 1'b1);
-        $display("[T=%0t] Finished algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
-        fsmtime = $realtime - simtime;
-
-        @(negedge io_clk);
-        @(negedge io_clk);
-        @(negedge io_clk);
-
-        // receive outputs
-        @(negedge io_clk) send_best_arr = 1'b1;
-        $display("[T=%0t] Start receiving outputs", $realtime);
-        simtime = $realtime;
-        @(negedge io_clk) send_best_arr = 1'b0;
-
-        // #1000; // test for continuous and uncontinuous rempty_n
-
-        sent=0;
-        for(px=0; px<2; px=px+1) begin
-            for(x=0; x<4; x=x+1) begin
-                // for(x=0; x<(ROW_SIZE/2/BLOCKING); x=x+1) begin  // for row_size = 24
-                for(y=0; y<COL_SIZE; y=y+1) begin
-                    for(xi=0; xi<BLOCKING; xi=xi+1) begin
-                        if ((x != 3) || (xi < 1)) begin  // for row_size = 26
-                            while(sent == 0) begin 
-                                @(negedge io_clk)
-                                if (out_fifo_rempty_n) begin
-                                    out_fifo_deq = 1'b1;
-                                    addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
-                                    received_idx[addr] = out_fifo_rdata;
-                                    // $display("addr %d, rdata %d", addr, out_fifo_rdata);
-                                    @(negedge io_clk)
-                                    out_fifo_deq = 1'b0;
-                                    @(negedge io_clk);
-                                    sent = 1;
-                                end else out_fifo_deq = 1'b0;
-                            end
-                            sent = 0;
-                        end
-                    end
-                end
+	    for (q=0; q<2; q=q+1) begin
+            
+            for(i=0; i<NUM_QUERYS; i=i+1) begin
+                scan_file = $fscanf(expected_idx_data_file, "%d\n", expected_idx[i]);
             end
-        end
 
-        @(negedge io_clk) out_fifo_deq = 1'b0;
-        // #1000;
+            received_idx_data_file = $fopen("received_idx.txt", "a");
+	        received_dist_data_file = $fopen("received_dist.txt", "a");
 
-        for(px=0; px<2; px=px+1) begin
-            for(x=0; x<4; x=x+1) begin
-                // for(x=0; x<(ROW_SIZE/2/BLOCKING); x=x+1) begin  // for row_size = 24
-                for(y=0; y<COL_SIZE; y=y+1) begin
-                    for(xi=0; xi<BLOCKING; xi=xi+1) begin
-                        for(agg=0; agg<=1; agg=agg+1) begin  // most significant first
-                            if ((x != 3) || (xi < 1)) begin  // for row_size = 26
-                                while(sent == 0) begin
+            $display("Starting new image");
+
+        
+            fsm_start = 0;
+            send_best_arr = 0;
+            load_kdtree = 0;
+            io_rst_n = 1'b1;
+            in_fifo_wenq = 0;
+            in_fifo_wdata = 11'd0;
+            out_fifo_deq = 0;
+
+
+            // wait for mgmt soc to finish configuring the io ports
+            wait(wbs_cfg_done);
+
+
+            // reset accelerator
+            #100
+            io_rst_n = 0;
+            #100
+            io_rst_n = 1'b1;
+            #100
+
+            // start load kd tree internal nodes and leaves
+            @(negedge io_clk) load_kdtree = 1'b1;
+            simtime = $realtime;
+            $display("[T=%0t] Start sending KD tree internal nodes and leaves", $realtime);
+            @(negedge io_clk) load_kdtree = 1'b0;
+
+            // send internal nodes, 2 lines per node
+            // index
+            // median
+            for(i=0; i<NUM_NODES*2; i=i+1) begin
+                @(negedge io_clk)
+                in_fifo_wenq = 1'b1;
+                scan_file = $fscanf(int_nodes_data_file, "%d\n", in_fifo_wdata[10:0]);
+            end
+            @(negedge io_clk)
+            in_fifo_wenq = 0;
+            in_fifo_wdata = 11'd0;
+
+            // send leaves, 6*8 lines per leaf
+            // 8 patches per leaf
+            // each patch has 5 lines of data
+            // and 1 line of patch index in the original image (for reconstruction)
+            for(i=0; i<NUM_LEAVES*6*8; i=i+1) begin
+                @(negedge io_clk)
+                in_fifo_wenq = 1'b1;
+                scan_file = $fscanf(leaves_data_file, "%d\n", in_fifo_wdata[10:0]);
+            end
+            @(negedge io_clk)
+            in_fifo_wenq = 0;
+            in_fifo_wdata = 11'd0;
+            $display("[T=%0t] Finished sending KD tree internal nodes and leaves", $realtime);
+            kdtreetime = $realtime - simtime;
+            
+            $display("[T=%0t] Start sending queries", $realtime);
+            simtime = $realtime;
+            // send query patches, 5 lines per query patch
+            // each patch has 5 lines of data
+            for(i=0; i<NUM_QUERYS*5; i=i+1) begin
+                @(negedge io_clk)
+                in_fifo_wenq = 1'b1;
+                scan_file = $fscanf(query_data_file, "%d\n", in_fifo_wdata[10:0]);
+            end
+            @(negedge io_clk)
+            in_fifo_wenq = 0;
+            in_fifo_wdata = 11'd0;
+            $display("[T=%0t] Finished sending queries", $realtime);
+            querytime = $realtime - simtime;
+
+            wait(load_done);
+            #100;  // can be replaced by load_done
+
+            //start algorithm
+            @(negedge io_clk) fsm_start = 1'b1;
+            $display("[T=%0t] Start algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
+            simtime = $realtime;
+            @(negedge io_clk) fsm_start = 1'b0;
+
+            wait(fsm_done == 1'b1);
+            $display("[T=%0t] Finished algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
+            fsmtime = $realtime - simtime;
+
+            @(negedge io_clk);
+            @(negedge io_clk);
+            @(negedge io_clk);
+
+            // receive outputs
+            @(negedge io_clk) send_best_arr = 1'b1;
+            $display("[T=%0t] Start receiving outputs", $realtime);
+            simtime = $realtime;
+            @(negedge io_clk) send_best_arr = 1'b0;
+
+            // #1000; // test for continuous and uncontinuous rempty_n
+
+            sent=0;
+            for(px=0; px<2; px=px+1) begin
+                //for(x=0; x<4; x=x+1) begin  // for row_size = 26
+                for(x=0; x<(ROW_SIZE/2/BLOCKING); x=x+1) begin
+                    for(y=0; y<COL_SIZE; y=y+1) begin
+                        for(xi=0; xi<BLOCKING; xi=xi+1) begin
+                            //if ((x != 3) || (xi < 1)) begin  // for row_size = 26
+                                while(sent == 0) begin 
                                     @(negedge io_clk)
                                     if (out_fifo_rempty_n) begin
                                         out_fifo_deq = 1'b1;
                                         addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
-                                        received_dist[addr][agg*DATA_WIDTH+:DATA_WIDTH] = out_fifo_rdata;
+                                        received_idx[addr] = out_fifo_rdata;
+                                        // $display("addr %d, rdata %d", addr, out_fifo_rdata);
                                         @(negedge io_clk)
                                         out_fifo_deq = 1'b0;
                                         @(negedge io_clk);
@@ -289,40 +268,68 @@ module ann_tb;
                                     end else out_fifo_deq = 1'b0;
                                 end
                                 sent = 0;
+                            // end
+                        end
+                    end
+                end
+            end
+
+            @(negedge io_clk) out_fifo_deq = 1'b0;
+            // #1000;
+
+            for(px=0; px<2; px=px+1) begin
+                //for(x=0; x<4; x=x+1) begin  // for row_size = 26
+                for(x=0; x<(ROW_SIZE/2/BLOCKING); x=x+1) begin
+                    for(y=0; y<COL_SIZE; y=y+1) begin
+                        for(xi=0; xi<BLOCKING; xi=xi+1) begin
+                            for(agg=0; agg<=1; agg=agg+1) begin  // most significant first
+                                // if ((x != 3) || (xi < 1)) begin  // for row_size = 26
+                                    while(sent == 0) begin
+                                        @(negedge io_clk)
+                                        if (out_fifo_rempty_n) begin
+                                            out_fifo_deq = 1'b1;
+                                            addr = px*ROW_SIZE/2 + y*ROW_SIZE + x*BLOCKING + xi;
+                                            received_dist[addr][agg*DATA_WIDTH+:DATA_WIDTH] = out_fifo_rdata;
+                                            @(negedge io_clk)
+                                            out_fifo_deq = 1'b0;
+                                            @(negedge io_clk);
+                                            sent = 1;
+                                        end else out_fifo_deq = 1'b0;
+                                    end
+                                    sent = 0;
+                                // end
                             end
                         end
                     end
                 end
             end
+
+            @(negedge io_clk) out_fifo_deq = 1'b0;
+            $display("[T=%0t] Finished receiving outputs", $realtime);
+            outputtime = $realtime - simtime;
+
+            for(i=0; i<NUM_QUERYS; i=i+1) begin
+                $fwrite(received_idx_data_file, "%d\n", received_idx[i]);
+                if (expected_idx[i] != received_idx[i])
+                    $display("mismatch %d: expected: %d, received %d", i, expected_idx[i], received_idx[i]);
+                // else
+                //     $display("match %d: expected: %d, received %d", i, expected_idx[i], received_idx[i]);
+            end
+
+            for(i=0; i<NUM_QUERYS; i=i+1) begin
+                $fwrite(received_dist_data_file, "%d\n", received_dist[i]);
+                // if (expected_idx[i] != received_dist[i])
+                //     $display("mismatch %d: expected: %d, received %d", i, expected_idx[i], received_dist[i]);
+                // else
+                //     $display("match %d: expected: %d, received %d", i, expected_idx[i], received_dist[i]);
+            end
+
+            $display("===============Runtime Summary===============");
+            $display("KD tree: %t", kdtreetime);
+            $display("Query patches: %t", querytime);
+            $display("Main Algorithm: %t", fsmtime);
+            $display("Outputs: %t", outputtime);
         end
-
-        @(negedge io_clk) out_fifo_deq = 1'b0;
-        $display("[T=%0t] Finished receiving outputs", $realtime);
-        outputtime = $realtime - simtime;
-
-        received_idx_data_file = $fopen("received_idx.txt", "w");
-        for(i=0; i<NUM_QUERYS; i=i+1) begin
-            $fwrite(received_idx_data_file, "%d\n", received_idx[i]);
-            if (expected_idx[i] != received_idx[i])
-                $display("mismatch %d: expected: %d, received %d", i, expected_idx[i], received_idx[i]);
-            // else
-            //     $display("match %d: expected: %d, received %d", i, expected_idx[i], received_idx[i]);
-        end
-
-        received_dist_data_file = $fopen("received_dist.txt", "w");
-        for(i=0; i<NUM_QUERYS; i=i+1) begin
-            $fwrite(received_dist_data_file, "%d\n", received_dist[i]);
-            // if (expected_idx[i] != received_dist[i])
-            //     $display("mismatch %d: expected: %d, received %d", i, expected_idx[i], received_dist[i]);
-            // else
-            //     $display("match %d: expected: %d, received %d", i, expected_idx[i], received_dist[i]);
-        end
-
-        $display("===============Runtime Summary===============");
-        $display("KD tree: %t", kdtreetime);
-        $display("Query patches: %t", querytime);
-        $display("Main Algorithm: %t", fsmtime);
-        $display("Outputs: %t", outputtime);
     end
 
     initial begin
