@@ -57,6 +57,7 @@ set ::env(VERILOG_FILES_BLACKBOX) "\
 	$script_dir/../../verilog/rtl/user_proj_example.v"
 
 set ::env(EXTRA_LEFS) "\
+	$script_dir/../../lef/sky130_sram_1kbyte_1rw1r_32x256_8.lef \
 	$script_dir/../../lef/user_proj_example.lef"
 
 set ::env(EXTRA_GDS_FILES) "\
