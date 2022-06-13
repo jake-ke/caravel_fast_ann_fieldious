@@ -13,6 +13,7 @@ lef_path="$base_dir/$build_target/*-signoff/outputs/design.lef"
 def_path="$base_dir/$build_target/*-signoff/outputs/design.def.gz"
 gl_path="$base_dir/$build_target/*-signoff/outputs/design.vcs.pg.v"
 spef_path="$base_dir/$build_target/*-signoff/outputs/design.spef.gz"
+sdf_path="$base_dir/$build_target/*-pt-timing-signoff/outputs/design.sdf"
 rtl_path="$base_dir/$build_target/4-rtl/outputs/design.v"
 spi_path="$base_dir/$build_target/*-gds2spice/outputs/design_extracted.spice"
 
@@ -23,6 +24,7 @@ lef_file="./lef/$top.lef"
 def_file="./def/$top.def.gz"
 gl_file="./verilog/gl/$top.v"
 spef_file="./spef/$top.spef.gz"
+sdf_file="./sdf/$top.sdf"
 rtl_file="./verilog/rtl/$top.v"
 spi_file="./spi/lvs/$top.spice"
 
@@ -38,6 +40,10 @@ fi
 if [ -f $def_file ]; then
       rm -rf $def_file
       echo "Removed existing $def_file"
+fi
+if [ -f $sdf_file ]; then
+      rm -rf $sdf_file
+      echo "Removed existing $sdf_file"
 fi
 if [ -f $gl_file ]; then
       rm -rf $gl_file
@@ -63,6 +69,8 @@ echo "Moving $lef_path to $lef_file"
 cp $lef_path $lef_file
 echo "Moving $def_path to $def_file"
 cp $def_path $def_file
+echo "Moving $sdf_path to $sdf_file"
+cp $sdf_path $sdf_file
 echo "Moving $gl_path to $gl_file"
 cp $gl_path $gl_file
 echo "Moving $spef_path to $spef_file"
