@@ -3200,7 +3200,7 @@ module sram_1kbyte_1rw1r (
 	parameter DATA_WIDTH = 32;
 	parameter ADDR_WIDTH = 8;
 	parameter RAM_DEPTH = 256;
-	parameter DELAY = 1;
+	parameter DELAY = 0.2;
 	input clk0;
 	input csb0;
 	input web0;

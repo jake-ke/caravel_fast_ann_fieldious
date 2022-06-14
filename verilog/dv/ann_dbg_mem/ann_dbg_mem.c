@@ -90,9 +90,9 @@ void main()
     reg_mprj_io_17 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_16 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_15 = GPIO_MODE_USER_STD_INPUT_NOPULL;
-    reg_mprj_io_14 = GPIO_MODE_USER_STD_INPUT_NOPULL;
+    reg_mprj_io_14 = GPIO_MODE_USER_STD_OUTPUT;
     reg_mprj_io_13 = GPIO_MODE_USER_STD_INPUT_NOPULL;
-    reg_mprj_io_12 = GPIO_MODE_USER_STD_OUTPUT; 
+    reg_mprj_io_12 = GPIO_MODE_USER_STD_INPUT_NOPULL; 
     reg_mprj_io_11 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_10 = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_9  = GPIO_MODE_USER_STD_INPUT_NOPULL;
@@ -117,58 +117,58 @@ void main()
     reg_mprj_xfer = 1;
     while (reg_mprj_xfer == 1);
 
-    // // configure all LA as output
-	// reg_la0_oenb = reg_la0_iena = 0xFFFFFFFF;    // [31:0]
-	// reg_la1_oenb = reg_la1_iena = 0xFFFFFFFF;    // [63:32]
-	// reg_la2_oenb = reg_la2_iena = 0xFFFFFFFF;    // [95:64]
-	// reg_la3_oenb = reg_la3_iena = 0xFFFFFFFF;    // [127:96]
+    // configure all LA as output
+	reg_la0_oenb = reg_la0_iena = 0xFFFFFFFF;    // [31:0]
+	reg_la1_oenb = reg_la1_iena = 0xFFFFFFFF;    // [63:32]
+	reg_la2_oenb = reg_la2_iena = 0xFFFFFFFF;    // [95:64]
+	reg_la3_oenb = reg_la3_iena = 0xFFFFFFFF;    // [127:96]
 
-    // reg_la0_data = 0x00000000;
-	// reg_la1_data = 0x00000000;
-	// reg_la2_data = 0x00000000;
-	// reg_la3_data = 0x00000000;
+    reg_la0_data = 0x00000000;
+	reg_la1_data = 0x00000000;
+	reg_la2_data = 0x00000000;
+	reg_la3_data = 0x00000000;
 
     // Done configuring the IO
     reg_mprj_cfg_cfg_done = 1;
 
 
-    bool skip_data_init = true;
-    if (!skip_data_init){
-        // use wb clk and rst
-        reg_mprj_cfg_mode = 1;
-        // enable debug mode to load/store data
-        reg_mprj_cfg_debug = 1;
+    // bool skip_data_init = true;
+    // if (!skip_data_init){
+    //     // use wb clk and rst
+    //     reg_mprj_cfg_mode = 1;
+    //     // enable debug mode to load/store data
+    //     reg_mprj_cfg_debug = 1;
         
-        // query mem init
-        // num query
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<494; i++){
-            for (uint32_t j=0; j<2; j++){
-                reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
-            }
-        }
+    //     // query mem init
+    //     // num query
+    //     for (uint32_t i=0; i<2; i++){  // testing only
+    //     // for (uint32_t i=0; i<494; i++){
+    //         for (uint32_t j=0; j<2; j++){
+    //             reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
+    //         }
+    //     }
 
 
-        // leaf mem init
-        // num leaf
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<63; i++){
-            // num patch
-            for (uint32_t j=0; j<8; j++){
-                for (uint32_t r=0; r<2; r++){
-                    reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
-                }
-            }
-        }
+    //     // leaf mem init
+    //     // num leaf
+    //     for (uint32_t i=0; i<2; i++){  // testing only
+    //     // for (uint32_t i=0; i<63; i++){
+    //         // num patch
+    //         for (uint32_t j=0; j<8; j++){
+    //             for (uint32_t r=0; r<2; r++){
+    //                 reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
+    //             }
+    //         }
+    //     }
 
 
-        // internal node init
+    //     // internal node init
 
 
-        // disable debug mode to release memory control
-        reg_mprj_cfg_mode = 0;
-        reg_mprj_cfg_debug = 0;
-    }
+    //     // disable debug mode to release memory control
+    //     reg_mprj_cfg_mode = 0;
+    //     reg_mprj_cfg_debug = 0;
+    // }
 
 
     // // start fsm
@@ -189,10 +189,20 @@ void main()
         reg_mprj_cfg_mode = 1;
         reg_mprj_cfg_debug = 1;
 
+        while(reg_mprj_cfg_query[0] != 0);
+        while(reg_mprj_cfg_query[1] != 0);
+        while(reg_mprj_cfg_query[2] != 0);
+        while(reg_mprj_cfg_query[3] != 0);
+
+        uint32_t a = reg_mprj_cfg_query[4];
+        a = reg_mprj_cfg_query[5];
+        a = reg_mprj_cfg_query[6];
+        a = reg_mprj_cfg_query[7];
+
         // query mem read
         // num query
-        // for (uint32_t i=0; i<2; i++){  // testing only
-        for (uint32_t i=0; i<494; i++){
+        for (uint32_t i=0; i<4; i=i+1){  // testing only
+        // for (uint32_t i=0; i<494; i++){
             uint32_t data0 = reg_mprj_cfg_query[2 * i + 0];
             uint32_t data1 = reg_mprj_cfg_query[2 * i + 1];
             uint64_t data64b = ((uint64_t)data1 << 32) | data0;
@@ -206,29 +216,29 @@ void main()
             }
         }
 
-        // // leaf mem read
-        // // num leaf
-        // // for (uint32_t i=0; i<2; i++){  // testing only
+        // leaf mem read
+        // num leaf
+        for (uint32_t i=0; i<2; i++){  // testing only
         // for (uint32_t i=0; i<63; i++){
-        //     // num patch
-        //     for (uint32_t j=0; j<8; j++){
-        //         uint32_t data0 = reg_mprj_cfg_leaf[2 * i + 0];
-        //         uint32_t data1 = reg_mprj_cfg_leaf[2 * i + 1];
-        //         uint64_t data64b = ((uint64_t)data1 << 32) | data0;
-        //         uint64_t mask_11b = 2047;
-        //         for (uint32_t m=0; m<6; m++){
-        //             uint64_t data_11b = data64b & mask_11b;
-        //             data_11b = data_11b >> (m * 11);
-        //             uint64_t expected_data_11b = (6 * 8 * i + 6 * j + m);
-        //             if (m == 5)
-        //                 expected_data_11b = expected_data_11b & 0x1FF;
-        //             else
-        //                 expected_data_11b = expected_data_11b & 0x7FF;
-        //             if (data_11b != expected_data_11b) test_pass = false;
-        //             mask_11b = mask_11b << 11;
-        //         }
-        //     }
-        // }
+            // num patch
+            for (uint32_t j=0; j<8; j++){
+                uint32_t data0 = reg_mprj_cfg_leaf[2 * i + 0];
+                uint32_t data1 = reg_mprj_cfg_leaf[2 * i + 1];
+                uint64_t data64b = ((uint64_t)data1 << 32) | data0;
+                uint64_t mask_11b = 2047;
+                for (uint32_t m=0; m<6; m++){
+                    uint64_t data_11b = data64b & mask_11b;
+                    data_11b = data_11b >> (m * 11);
+                    uint64_t expected_data_11b = (6 * 8 * i + 6 * j + m);
+                    if (m == 5)
+                        expected_data_11b = expected_data_11b & 0x1FF;
+                    else
+                        expected_data_11b = expected_data_11b & 0x7FF;
+                    if (data_11b != expected_data_11b) test_pass = false;
+                    mask_11b = mask_11b << 11;
+                }
+            }
+        }
 
         // // internal node tree read
         // for (uint32_t i=0; i<63; i++){
