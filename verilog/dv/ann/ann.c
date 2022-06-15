@@ -170,7 +170,6 @@ void main()
     // while(reg_mprj_cfg_fsm_done == 1);
     // reg_mprj_cfg_fsm_done = 0;
 
-
     bool debug_mem = true;
     if (debug_mem){
         while(reg_mprj_cfg_load_done==0);
@@ -180,47 +179,115 @@ void main()
         while(reg_mprj_cfg_send_done==0);
         reg_mprj_cfg_send_done = 0;
         
-        // if doing at least 2 tests
-        while(reg_mprj_cfg_load_done==0);
-        reg_mprj_cfg_load_done = 0;
-        while(reg_mprj_cfg_fsm_done==0);
-        reg_mprj_cfg_fsm_done = 0;
-        while(reg_mprj_cfg_send_done==0);
-        reg_mprj_cfg_send_done = 0;
+        // // if doing 2 tests
+        // while(reg_mprj_cfg_load_done==0);
+        // reg_mprj_cfg_load_done = 0;
+        // while(reg_mprj_cfg_fsm_done==0);
+        // reg_mprj_cfg_fsm_done = 0;
+        // while(reg_mprj_cfg_send_done==0);
+        // reg_mprj_cfg_send_done = 0;
 
         // enable debug mode to load/store data
         reg_mprj_cfg_mode = 1;
         reg_mprj_cfg_debug = 1;
 
-        // query mem read
-        // num query
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<494; i++){
-            for (uint32_t j=0; j<2; j++){
-                uint32_t data = reg_mprj_cfg_query[2 * i + j];
-            }
-        }
+        uint32_t a;
+        // query 0
+        if (reg_mprj_cfg_query[0] != 0xF682416B) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_query[1] != 0x00773071) reg_mprj_cfg_cfg_done = 0;
+        // query 1
+        if (reg_mprj_cfg_query[2] != 0XFB878954) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_query[3] != 0X007E6F6B) reg_mprj_cfg_cfg_done = 0;
+        // query 510
+        if (reg_mprj_cfg_query[1020] != 0X197C719B) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_query[1021] != 0X00028EF6) reg_mprj_cfg_cfg_done = 0;
+        // query 511
+        if (reg_mprj_cfg_query[1022] != 0X0DBCFA21) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_query[1023] != 0X0002CEB0) reg_mprj_cfg_cfg_done = 0;
 
-        // leaf mem read
-        // num leaf
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<63; i++){
-            // num patch
-            for (uint32_t j=0; j<8; j++){
-                for (uint32_t r=0; r<2; r++){
-                    uint32_t data = reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r];
-                }
-            }
-        }
 
-        // best array read back
-        // num query
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<494; i++){
-            for (uint32_t j=0; j<2; j++){
-                uint32_t data = reg_mprj_cfg_best[2 * i + j];
-            }
-        }
+        // node 0
+        if (reg_mprj_cfg_node[0] != 0X003B4800) reg_mprj_cfg_cfg_done = 0;
+        // node 1
+        if (reg_mprj_cfg_node[1] != 0X00002802) reg_mprj_cfg_cfg_done = 0;
+        // node 61
+        if (reg_mprj_cfg_node[61] != 0X0001F803) reg_mprj_cfg_cfg_done = 0;
+        // node 62
+        if (reg_mprj_cfg_node[62] != 0X00062800) reg_mprj_cfg_cfg_done = 0;
+
+
+        // leaf 0 patch 0
+        if (reg_mprj_cfg_leaf[0] != 0XDFBA6F35) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[1] != 0X90005007) reg_mprj_cfg_cfg_done = 0;
+        // leaf 0 patch 1
+        if (reg_mprj_cfg_leaf[2] != 0XE3BB7F2E) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[3] != 0XA0FFC093) reg_mprj_cfg_cfg_done = 0;
+        // leaf 1 patch 0
+        if (reg_mprj_cfg_leaf[16] != 0XF67EAF66) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[17] != 0X77FECFF3) reg_mprj_cfg_cfg_done = 0;
+        // leaf 62 patch 0
+        if (reg_mprj_cfg_leaf[992] != 0X133FE878) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[993] != 0X1D07A014) reg_mprj_cfg_cfg_done = 0;
+        // leaf 62 patch 7
+        if (reg_mprj_cfg_leaf[1006] != 0X0EC0A8C5) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[1007] != 0X0F032050) reg_mprj_cfg_cfg_done = 0;
+        // leaf 63 patch 6
+        if (reg_mprj_cfg_leaf[1020] != 0X0745F9C7) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[1021] != 0X7FFC20D0) reg_mprj_cfg_cfg_done = 0;
+        // leaf 63 patch 7
+        if (reg_mprj_cfg_leaf[1022] != 0XFA8569CA) reg_mprj_cfg_cfg_done = 0;
+        if (reg_mprj_cfg_leaf[1023] != 0X8FFFC0D1) reg_mprj_cfg_cfg_done = 0;
+
+
+        // best 0
+        if (reg_mprj_cfg_best[0] != 0X005EE6BF) reg_mprj_cfg_cfg_done = 0;
+        // best 16
+        if (reg_mprj_cfg_best[1] != 0X00A1FA37) reg_mprj_cfg_cfg_done = 0;
+        // best 1
+        if (reg_mprj_cfg_best[2] != 0X018F231F) reg_mprj_cfg_cfg_done = 0;
+        // best 17
+        if (reg_mprj_cfg_best[3] != 0X00985637) reg_mprj_cfg_cfg_done = 0;
+        // best 494
+        if (reg_mprj_cfg_best[1020] != 0X001D9E08) reg_mprj_cfg_cfg_done = 0;
+        // best 510
+        if (reg_mprj_cfg_best[1021] != 0X00A464BD) reg_mprj_cfg_cfg_done = 0;
+        // best 495
+        if (reg_mprj_cfg_best[1022] != 0X006A0026) reg_mprj_cfg_cfg_done = 0;
+        // best 511
+        if (reg_mprj_cfg_best[1023] != 0X01979EBD) reg_mprj_cfg_cfg_done = 0;
+
+
+        // the following for loop do not generate read!!! why?
+
+        // // query mem read
+        // // num query
+        // for (uint32_t i=0; i<2; i++){  // testing only
+        // // for (uint32_t i=0; i<512; i++){
+        //     for (uint32_t j=0; j<2; j++){
+        //         uint32_t data = reg_mprj_cfg_query[2 * i + j];
+        //     }
+        // }
+
+        // // leaf mem read
+        // // num leaf
+        // for (uint32_t i=0; i<2; i++){  // testing only
+        // // for (uint32_t i=0; i<63; i++){
+        //     // num patch
+        //     for (uint32_t j=0; j<8; j++){
+        //         for (uint32_t r=0; r<2; r++){
+        //             uint32_t data = reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r];
+        //         }
+        //     }
+        // }
+
+        // // best array read back
+        // // num query
+        // for (uint32_t i=0; i<2; i++){  // testing only
+        // // for (uint32_t i=0; i<512; i++){
+        //     for (uint32_t j=0; j<2; j++){
+        //         uint32_t data = reg_mprj_cfg_best[2 * i + j];
+        //     }
+        // }
 
         // disable debug mode to release memory control
         reg_mprj_cfg_mode = 0;

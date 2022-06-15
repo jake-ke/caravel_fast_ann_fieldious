@@ -79,8 +79,8 @@ module ann_dbg_mem_tb;
     // simulation.  Normally this would be a slow clock and the digital PLL
     // would be the fast clock.
 
-    always #0.5 clock <= (clock === 1'b0);
-    always #1 io_clk <= (io_clk === 1'b0);
+    always #50 clock <= (clock === 1'b0);
+    always #3 io_clk <= (io_clk === 1'b0);
 
     initial begin
         clock = 0;
@@ -100,12 +100,20 @@ module ann_dbg_mem_tb;
     integer i;
     integer px;
     integer agg;
+    integer node_data_file;
+    integer leaf_data_file;
+    integer query_data_file;
+    reg [21:0] tmp_node;
+    reg [54:0] tmp_query;
 
     initial begin
         $timeformat(-9, 2, "ns", 20);
         $dumpfile("ann_dbg_mem.vcd");
         $dumpvars(0, ann_dbg_mem_tb);
 
+        node_data_file = $fopen("node.txt", "w");
+        leaf_data_file = $fopen("leaf.txt", "w");
+        query_data_file = $fopen("query.txt", "w");
         
         fsm_start = 0;
         send_best_arr = 0;
@@ -140,6 +148,10 @@ module ann_dbg_mem_tb;
             @(negedge io_clk)
             in_fifo_wenq = 1'b1;
             in_fifo_wdata = i;
+            if (i % 2 == 1) begin
+                tmp_node[i[0] * 11 +: 11] = i[10:0]; // 11 bit median
+                $fwrite(node_data_file, "%h\n", tmp_node);
+            end else tmp_node[i[0] * 11 +: 11] = {8'd0, i[2:0]}; // 3 bit index
         end
         @(negedge io_clk)
         in_fifo_wenq = 0;
@@ -168,6 +180,9 @@ module ann_dbg_mem_tb;
             @(negedge io_clk)
             in_fifo_wenq = 1'b1;
             in_fifo_wdata = i;
+            tmp_query[(i % 5) * 11 +: 11] = i[10:0];
+            if (i % 5 == 4)
+                $fwrite(query_data_file, "%h\n", tmp_query);
         end
         @(negedge io_clk)
         in_fifo_wenq = 0;
@@ -280,6 +295,13 @@ module ann_dbg_mem_tb;
         .io2(),			// not used
         .io3()			// not used
     );
+
+    `ifdef ENABLE_SDF
+		initial begin
+			$sdf_annotate("../../../sdf/user_project_wrapper.sdf", uut.mprj);
+			$sdf_annotate("../../../sdf/user_proj_example.sdf", uut.mprj.mprj);
+		end
+	`endif 
 
 endmodule
 `default_nettype wire

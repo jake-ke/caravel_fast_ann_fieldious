@@ -106,13 +106,6 @@ void main()
     reg_mprj_io_1  = GPIO_MODE_USER_STD_INPUT_NOPULL;
     reg_mprj_io_0  = GPIO_MODE_USER_STD_INPUT_NOPULL;
 
-    // Set clock to 64 kbaud and enable the UART.  It is important to do this
-    // before applying the configuration, or else the Tx line initializes as
-    // zero, which indicates the start of a byte to the receiver.
-
-    // reg_uart_clkdiv = 625;
-    reg_uart_enable = 1;
-
     /* Apply configuration */
     reg_mprj_xfer = 1;
     while (reg_mprj_xfer == 1);
@@ -141,9 +134,9 @@ void main()
         
     //     // query mem init
     //     // num query
-    //     for (uint32_t i=0; i<2; i++){  // testing only
-    //     // for (uint32_t i=0; i<494; i++){
-    //         for (uint32_t j=0; j<2; j++){
+    //     for (uint8_t i=0; i<2; i++){  // testing only
+    //     // for (uint8_t i=0; i<494; i++){
+    //         for (uint8_t j=0; j<2; j++){
     //             reg_mprj_cfg_query[2 * i + j] = 2 * i + j;
     //         }
     //     }
@@ -151,10 +144,10 @@ void main()
 
     //     // leaf mem init
     //     // num leaf
-    //     for (uint32_t i=0; i<2; i++){  // testing only
-    //     // for (uint32_t i=0; i<63; i++){
+    //     for (uint8_t i=0; i<2; i++){  // testing only
+    //     // for (uint8_t i=0; i<63; i++){
     //         // num patch
-    //         for (uint32_t j=0; j<8; j++){
+    //         for (uint8_t j=0; j<8; j++){
     //             for (uint32_t r=0; r<2; r++){
     //                 reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + r] = 2 * 8 * i + 2 * j + r;
     //             }
@@ -189,59 +182,95 @@ void main()
         reg_mprj_cfg_mode = 1;
         reg_mprj_cfg_debug = 1;
 
-        while(reg_mprj_cfg_query[0] != 0);
-        while(reg_mprj_cfg_query[1] != 0);
-        while(reg_mprj_cfg_query[2] != 0);
-        while(reg_mprj_cfg_query[3] != 0);
+        uint32_t a;
 
-        uint32_t a = reg_mprj_cfg_query[4];
-        a = reg_mprj_cfg_query[5];
-        a = reg_mprj_cfg_query[6];
-        a = reg_mprj_cfg_query[7];
+        // for loops do not work for some reason!
+        // for (uint8_t i=0; i<8; i=i+1){
+        //     a = reg_mprj_cfg_query[i];
+        // }
 
         // query mem read
         // num query
-        for (uint32_t i=0; i<4; i=i+1){  // testing only
-        // for (uint32_t i=0; i<494; i++){
-            uint32_t data0 = reg_mprj_cfg_query[2 * i + 0];
-            uint32_t data1 = reg_mprj_cfg_query[2 * i + 1];
-            uint64_t data64b = ((uint64_t)data1 << 32) | data0;
-            uint64_t mask_11b = 2047;
-            for (uint32_t m=0; m<5; m++){
-                uint64_t data_11b = data64b & mask_11b;
-                data_11b = data_11b >> (m * 11);
-                uint64_t expected_data_11b = (5 * i + m) & 0x7FF;
-                if (data_11b != expected_data_11b) test_pass = false;
-                mask_11b = mask_11b << 11;
-            }
-        }
+        // for (uint8_t i=0; i<4; i=i+1){  // testing only
+        // // for (uint8_t i=0; i<494; i++){
+        //     uint32_t data0 = reg_mprj_cfg_query[2 * i + 0];
+        //     uint32_t data1 = reg_mprj_cfg_query[2 * i + 1];
+        //     uint64_t data64b = ((uint64_t)data1 << 32) | data0;
+        //     uint64_t mask_11b = 2047;
+        //     for (uint8_t m=0; m<5; m++){
+        //         uint64_t data_11b = data64b & mask_11b;
+        //         data_11b = data_11b >> (m * 11);
+        //         uint64_t expected_data_11b = (5 * i + m) & 0x7FF;
+        //         if (data_11b != expected_data_11b) test_pass = false;
+        //         mask_11b = mask_11b << 11;
+        //     }
+        // }
 
-        // leaf mem read
-        // num leaf
-        for (uint32_t i=0; i<2; i++){  // testing only
-        // for (uint32_t i=0; i<63; i++){
-            // num patch
-            for (uint32_t j=0; j<8; j++){
-                uint32_t data0 = reg_mprj_cfg_leaf[2 * i + 0];
-                uint32_t data1 = reg_mprj_cfg_leaf[2 * i + 1];
-                uint64_t data64b = ((uint64_t)data1 << 32) | data0;
-                uint64_t mask_11b = 2047;
-                for (uint32_t m=0; m<6; m++){
-                    uint64_t data_11b = data64b & mask_11b;
-                    data_11b = data_11b >> (m * 11);
-                    uint64_t expected_data_11b = (6 * 8 * i + 6 * j + m);
-                    if (m == 5)
-                        expected_data_11b = expected_data_11b & 0x1FF;
-                    else
-                        expected_data_11b = expected_data_11b & 0x7FF;
-                    if (data_11b != expected_data_11b) test_pass = false;
-                    mask_11b = mask_11b << 11;
-                }
-            }
-        }
+        // manually check the first and last addresses
+        // query 0
+        a = reg_mprj_cfg_query[0];
+        a = reg_mprj_cfg_query[1];
+        // query 1
+        a = reg_mprj_cfg_query[2];
+        a = reg_mprj_cfg_query[3];
+        // query 510
+        a = reg_mprj_cfg_query[1020];
+        a = reg_mprj_cfg_query[1021];
+        // query 511
+        a = reg_mprj_cfg_query[1022];
+        a = reg_mprj_cfg_query[1023];
+
+
+        // // leaf mem read
+        // // num leaf
+        // for (uint8_t i=0; i<2; i++){  // testing only
+        // // for (uint8_t i=0; i<64; i++){
+        //     // num patch
+        //     for (uint8_t j=0; j<8; j++){
+        //         uint32_t data0 = reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + 0];
+        //         uint32_t data1 = reg_mprj_cfg_leaf[2 * 8 * i + 2 * j + 1];
+        //         uint64_t data64b = ((uint64_t)data1 << 32) | data0;
+        //         uint64_t mask_11b = 2047;
+        //         for (uint8_t m=0; m<6; m++){
+        //             uint64_t data_11b = data64b & mask_11b;
+        //             data_11b = data_11b >> (m * 11);
+        //             uint64_t expected_data_11b = (6 * 8 * i + 6 * j + m);
+        //             if (m == 5)
+        //                 expected_data_11b = expected_data_11b & 0x1FF;
+        //             else
+        //                 expected_data_11b = expected_data_11b & 0x7FF;
+        //             if (data_11b != expected_data_11b) test_pass = false;
+        //             mask_11b = mask_11b << 11;
+        //         }
+        //     }
+        // }
+
+        // manually check the first and last addresses
+        // leaf 0 patch 0
+        a = reg_mprj_cfg_leaf[0];
+        a = reg_mprj_cfg_leaf[1];
+        // leaf 0 patch 1
+        a = reg_mprj_cfg_leaf[2];
+        a = reg_mprj_cfg_leaf[3];
+        // leaf 1 patch 0
+        a = reg_mprj_cfg_leaf[16];
+        a = reg_mprj_cfg_leaf[17];
+        // leaf 62 patch 0
+        a = reg_mprj_cfg_leaf[992];
+        a = reg_mprj_cfg_leaf[993];
+        // leaf 62 patch 7
+        a = reg_mprj_cfg_leaf[1006];
+        a = reg_mprj_cfg_leaf[1007];
+        // leaf 63 patch 6
+        a = reg_mprj_cfg_leaf[1020];
+        a = reg_mprj_cfg_leaf[1021];
+        // leaf 63 patch 7
+        a = reg_mprj_cfg_leaf[1022];
+        a = reg_mprj_cfg_leaf[1023];
+
 
         // // internal node tree read
-        // for (uint32_t i=0; i<63; i++){
+        // for (uint8_t i=0; i<63; i++){
         //     uint32_t data = reg_mprj_cfg_node[i];
 
         //     // 3 bit index
@@ -261,8 +290,8 @@ void main()
         //         test_pass = false;
         //     }
 
-        //     // uint32_t mask_11b = 0x7FF;
-        //     // for (uint32_t m=0; m<2; m++){
+        //     // uint8_t mask_11b = 0x7FF;
+        //     // for (uint8_t m=0; m<2; m++){
         //     //     uint32_t data_11b = data & mask_11b;
         //     //     uint32_t expected_data_11b = (2 * i + m) & 0x7FF;
         //     //     data_11b = data_11b >> (m * 11);
@@ -273,6 +302,21 @@ void main()
         //     //     mask_11b = mask_11b << 11;
         //     // }
         // }
+
+        // manually check the first and last addresses
+        // node 0
+        a = reg_mprj_cfg_node[0];
+        if (a != 0x0800) test_pass = false;
+        // node 1
+        a = reg_mprj_cfg_node[1];
+        if (a != 0x01802) test_pass = false;
+        // node 61
+        a = reg_mprj_cfg_node[61];
+        if (a != 0x3D802) test_pass = false;
+        // node 62
+        if (a != 0x3E804) test_pass = false;
+        a = reg_mprj_cfg_node[62];
+
 
         // disable debug mode to release memory control
         reg_mprj_cfg_mode = 0;

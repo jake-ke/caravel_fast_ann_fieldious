@@ -17,7 +17,7 @@
 
 `timescale 1 ns / 1 ps
 
-module ann_tb;
+module wb_e2e_tb;
     parameter DATA_WIDTH = 11;
     parameter LEAF_SIZE = 8;
     parameter PATCH_SIZE = 5;
@@ -114,31 +114,13 @@ module ann_tb;
 
     initial begin
         $timeformat(-9, 2, "ns", 20);
-        $dumpfile("ann.vcd");
-        $dumpvars(0, ann_tb);
+        $dumpfile("wb_e2e.vcd");
+        $dumpvars(0, wb_e2e_tb);
 
         // 126 vidpairs
         expected_idx_data_file = $fopen("inputs/expectedIndex.txt", "r");
         if (expected_idx_data_file == 0) begin
             $display("expected_idx_data_file handle was NULL");
-            $finish;
-        end
-        
-        int_nodes_data_file = $fopen("inputs/internalNodes.txt", "r");
-        if (int_nodes_data_file == 0) begin
-            $display("int_nodes_data_file handle was NULL");
-            $finish;
-        end
-        
-        leaves_data_file = $fopen("inputs/leafNodes.txt", "r");
-        if (leaves_data_file == 0) begin
-            $display("leaves_data_file handle was NULL");
-            $finish;
-        end
-        
-        query_data_file = $fopen("inputs/patches.txt", "r");
-        if (query_data_file == 0) begin
-            $display("query_data_file handle was NULL");
             $finish;
         end
 
@@ -165,79 +147,15 @@ module ann_tb;
 
             // wait for mgmt soc to finish configuring the io ports
             wait(wbs_cfg_done);
-
-
-            // reset accelerator
-            #100
-            io_rst_n = 0;
-            #100
-            io_rst_n = 1'b1;
-            #100
-
-            // start load kd tree internal nodes and leaves
-            @(negedge io_clk) load_kdtree = 1'b1;
+            $display("[T=%0t] Wishbone IO configuration done", $realtime);
             simtime = $realtime;
-            $display("[T=%0t] Start sending KD tree internal nodes and leaves", $realtime);
-            @(negedge io_clk) load_kdtree = 1'b0;
-
-            // send internal nodes, 2 lines per node
-            // index
-            // median
-            for(i=0; i<NUM_NODES*2; i=i+1) begin
-                @(negedge io_clk)
-                in_fifo_wenq = 1'b1;
-                scan_file = $fscanf(int_nodes_data_file, "%d\n", in_fifo_wdata[10:0]);
-            end
-            @(negedge io_clk)
-            in_fifo_wenq = 0;
-            in_fifo_wdata = 11'd0;
-
-            // send leaves, 6*8 lines per leaf
-            // 8 patches per leaf
-            // each patch has 5 lines of data
-            // and 1 line of patch index in the original image (for reconstruction)
-            for(i=0; i<NUM_LEAVES*6*8; i=i+1) begin
-                @(negedge io_clk)
-                in_fifo_wenq = 1'b1;
-                scan_file = $fscanf(leaves_data_file, "%d\n", in_fifo_wdata[10:0]);
-            end
-            @(negedge io_clk)
-            in_fifo_wenq = 0;
-            in_fifo_wdata = 11'd0;
-            $display("[T=%0t] Finished sending KD tree internal nodes and leaves", $realtime);
-            kdtreetime = $realtime - simtime;
-            
-            $display("[T=%0t] Start sending queries", $realtime);
-            simtime = $realtime;
-            // send query patches, 5 lines per query patch
-            // each patch has 5 lines of data
-            for(i=0; i<NUM_QUERYS*5; i=i+1) begin
-                @(negedge io_clk)
-                in_fifo_wenq = 1'b1;
-                scan_file = $fscanf(query_data_file, "%d\n", in_fifo_wdata[10:0]);
-            end
-            @(negedge io_clk)
-            in_fifo_wenq = 0;
-            in_fifo_wdata = 11'd0;
-            $display("[T=%0t] Finished sending queries", $realtime);
-            querytime = $realtime - simtime;
-
-            wait(load_done);
-            #100;  // can be replaced by load_done
-
-            //start algorithm
-            @(negedge io_clk) fsm_start = 1'b1;
-            $display("[T=%0t] Start algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
-            simtime = $realtime;
-            @(negedge io_clk) fsm_start = 1'b0;
 
             wait(fsm_done == 1'b1);
-            $display("[T=%0t] Finished algorithm (ExactFstRow, SearchLeaf and ProcessRows)", $realtime);
+            $display("[T=%0t] Wishbone finished", $realtime);
             fsmtime = $realtime - simtime;
 
-            @(negedge io_clk);
-            @(negedge io_clk);
-            @(negedge io_clk);
+            // wait for wishbone
+            wait(wbs_done == 1);
 
             // receive outputs
             @(negedge io_clk) send_best_arr = 1'b1;
@@ -329,12 +247,15 @@ module ann_tb;
             $display("Query patches: %t", querytime);
             $display("Main Algorithm: %t", fsmtime);
             $display("Outputs: %t", outputtime);
+
+            #200;
+            $finish;
         end
     end
 
     initial begin
         // Repeat cycles of 1000 clock edges as needed to complete testbench
-        repeat (200) begin
+        repeat (2500) begin
             repeat (1000) @(posedge clock);
             $display("+1000 cycles");
         end
@@ -350,7 +271,7 @@ module ann_tb;
 
     initial begin
         $display("Monitor: MPRJ-Logic WB Started");
-        wait(send_done == 1);
+        wait(fsm_done == 1);
         wait(wbs_done == 1);
         if (wbs_cfg_done == 1) begin
             `ifdef GL
@@ -366,7 +287,7 @@ module ann_tb;
                 $display ("Monitor: Wishbone debugging (RTL) Failed");
             `endif
         end
-        $finish;
+        // $finish;
     end
 
     initial begin
@@ -428,7 +349,7 @@ module ann_tb;
     );
 
     spiflash #(
-        .FILENAME("ann.hex")
+        .FILENAME("wb_e2e.hex")
     ) spiflash (
         .csb(flash_csb),
         .clk(flash_clk),
