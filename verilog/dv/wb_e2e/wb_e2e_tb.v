@@ -144,6 +144,13 @@ module wb_e2e_tb;
             in_fifo_wdata = 11'd0;
             out_fifo_deq = 0;
 
+            // reset accelerator
+            #100
+            io_rst_n = 0;
+            #100
+            io_rst_n = 1'b1;
+            #100
+
 
             // wait for mgmt soc to finish configuring the io ports
             wait(wbs_cfg_done);
