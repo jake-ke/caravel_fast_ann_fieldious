@@ -139,16 +139,10 @@ jobs:
 
       - name: Harden using Openlane
         run: |
-          #make user_proj_example
           make user_project_wrapper
 
       - name: Run DV RTL tests
         run: |
-          #make verify-io_ports-rtl 
-          #make verify-la_test1-rtl 
-          #make verify-la_test2-rtl 
-          #make verify-mprj_stimulus-rtl 
-          #make verify-wb_port-rtl
           make verify-ann-rtl
           make verify-ann_dbg_mem-rtl
           make verify-ann_wb_e2e-rtl
@@ -156,11 +150,6 @@ jobs:
 
       - name: Run DV GL tests
         run: |
-          #make verify-io_ports-gl 
-          #make verify-la_test1-gl 
-          #make verify-la_test2-gl 
-          #make verify-mprj_stimulus-gl 
-          #make verify-wb_port-gl
           make verify-ann-gl
           make verify-ann_dbg_mem-gl
           make verify-ann_wb_e2e-gl
