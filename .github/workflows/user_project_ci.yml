@@ -139,6 +139,8 @@ jobs:
 
       - name: Harden using Openlane
         run: |
+          gunzip def/user_project_wrapper.def.gz
+          gunzip gds/user_project_wrapper.gds.gz
           make user_project_wrapper
 
       - name: Run DV RTL tests
