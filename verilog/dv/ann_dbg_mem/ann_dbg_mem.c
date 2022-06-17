@@ -305,17 +305,13 @@ void main()
 
         // manually check the first and last addresses
         // node 0
-        a = reg_mprj_cfg_node[0];
-        if (a != 0x0800) test_pass = false;
+        if (reg_mprj_cfg_node[0] != 0x0800) reg_mprj_cfg_cfg_done = 0;
         // node 1
-        a = reg_mprj_cfg_node[1];
-        if (a != 0x01802) test_pass = false;
+        if (reg_mprj_cfg_node[1] != 0x01802) reg_mprj_cfg_cfg_done = 0;
         // node 61
-        a = reg_mprj_cfg_node[61];
-        if (a != 0x3D802) test_pass = false;
+        if (reg_mprj_cfg_node[61] != 0x3D802) reg_mprj_cfg_cfg_done = 0;
         // node 62
-        if (a != 0x3E804) test_pass = false;
-        a = reg_mprj_cfg_node[62];
+        if (reg_mprj_cfg_node[62] != 0x3E804) reg_mprj_cfg_cfg_done = 0;
 
 
         // disable debug mode to release memory control
@@ -324,7 +320,7 @@ void main()
     }
 
     // temporary hack
-    if (test_pass) reg_mprj_cfg_cfg_done = 0;
+    // if (test_pass) reg_mprj_cfg_cfg_done = 0;
 
     // tell ann_tb to stop
     reg_mprj_cfg_done = 1;

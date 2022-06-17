@@ -57,10 +57,10 @@ fi
 #       rm -rf $rtl_file
 #       echo "Removed existing $rtl_file"
 # fi
-#if [ -f $spi_file ]; then
-#    rm -rf $spi_file
-#    echo "Removed existing $spi_file"
-#fi
+if [ -f $spi_file ]; then
+   rm -rf $spi_file
+   echo "Removed existing $spi_file"
+fi
 
 # Moving files
 echo "Moving $gds_path to $gds_file"
@@ -77,8 +77,8 @@ echo "Moving $spef_path to $spef_file"
 cp $spef_path $spef_file
 # echo "Moving $rtl_path to $rtl_file"
 # cp $rtl_path $rtl_file
-#echo "Moving $spi_path to $spi_file"
-#cp $spi_path $spi_file
+echo "Moving $spi_path to $spi_file"
+cp $spi_path $spi_file
 
 #unzip .gz files
 echo "gunzip $def_file"

@@ -210,7 +210,7 @@ module ann_dbg_mem_tb;
     initial begin
         $display("Monitor: MPRJ-Logic WB Started");
         wait(wbs_done == 1);
-        if (wbs_cfg_done == 0) begin
+        if (wbs_cfg_done == 1) begin
             `ifdef GL
                 $display("Monitor: Mega-Project WB (GL) Passed");
             `else

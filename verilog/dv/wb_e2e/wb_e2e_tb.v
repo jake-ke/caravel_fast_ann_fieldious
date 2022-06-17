@@ -262,7 +262,7 @@ module wb_e2e_tb;
 
     initial begin
         // Repeat cycles of 1000 clock edges as needed to complete testbench
-        repeat (2500) begin
+        repeat (5000) begin
             repeat (1000) @(posedge clock);
             $display("+1000 cycles");
         end

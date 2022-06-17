@@ -147,12 +147,9 @@ jobs:
         run: |
           make verify-ann-rtl
           make verify-ann_dbg_mem-rtl
-          make verify-ann_wb_e2e-rtl
+          make verify-wb_e2e-rtl
           make verify-gpio_test-rtl
 
       - name: Run DV GL tests
         run: |
           make verify-ann-gl
-          make verify-ann_dbg_mem-gl
-          make verify-ann_wb_e2e-gl
-          make verify-gpio_test-gl
