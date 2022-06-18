@@ -151,4 +151,4 @@ jobs:
 
       - name: Run DV GL tests
         run: |
-          make verify-ann-gl
+          make verify-gpio_test-gl
