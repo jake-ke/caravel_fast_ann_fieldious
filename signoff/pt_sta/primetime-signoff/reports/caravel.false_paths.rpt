@@ -1,0 +1,19 @@
+****************************************
+Report : exceptions
+Design : caravel
+Version: T-2022.03-SP3
+Date   : Fri Oct 21 14:56:59 2022
+****************************************
+
+Reasons :   f  invalid start points
+            t  invalid end points
+            p  non-existent paths
+            o  overridden paths
+
+Legend :    i  ignore clock latency in path delay
+From                To                   Setup          Hold            Ignored
+--------------------------------------------------------------------------------
+
+resetb              *                    FALSE          FALSE           
+
+1
