@@ -6,19 +6,21 @@ set ::env(SYNTH_CLOCK_UNCERTAINITY) 0.25
 set ::env(SYNTH_CLOCK_TRANSITION) 0.15
 
 ## MASTER CLOCKS
-create_clock -name "io_clock" -period 8.33 [get_ports "io_in[0]"]
+# create_clock -name "io_clock" -period 8.33 [get_ports "io_in[0]"]
+create_clock -name "io_clock" -period 8.33 [get_ports {mprj_io[0]}]
 
 # user_clock2: period 8.33
-create_generated_clock -name "user_clock2" -source "clk" -multiply_by 3 -duty_cycle 50 mprj/user_clock2
+# create_generated_clock -name "user_clock2" -source "clk" -multiply_by 3 -duty_cycle 50 mprj/user_clock2
+create_clock -name "user_clock2" -source "clk" -multiply_by 3 -duty_cycle 50 mprj/user_clock2
 
 set_clock_groups -asynchronous \
                  -group [get_clocks "clk"] \
                  -group [get_clocks "user_clock2"] \
                  -group [get_clocks "io_clock"]
 
-set_clock_groups -asynchronous \
-                 -group [get_clocks "clk"] \
-                 -group [get_clocks "io_clock"]
+#set_clock_groups -asynchronous \
+#                 -group [get_clocks "clk"] \
+#                 -group [get_clocks "io_clock"]
 
 ## INPUT/OUTPUT DELAYS
 set input_delay_value 3
