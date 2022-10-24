@@ -5,27 +5,27 @@
 ## MASTER CLOCKS
 create_clock -name clk -period 25 [get_ports {clock}] 
 
-create_clock -name hkspi_clk -period 100 [get_pins {housekeeping/mgmt_gpio_in[4]} ] 
-create_clock -name hk_serial_clk -period 50 [get_pins {housekeeping/serial_clock}]
-create_clock -name hk_serial_load -period 1000 [get_pins {housekeeping/serial_load}]
+#create_clock -name hkspi_clk -period 100 [get_pins {housekeeping/mgmt_gpio_in[4]} ]
+#create_clock -name hk_serial_clk -period 50 [get_pins {housekeeping/serial_clock}]
+#create_clock -name hk_serial_load -period 1000 [get_pins {housekeeping/serial_load}]
 # hk_serial_clk period is x2 core clock
 
 set_clock_groups \
    -name clock_group \
    -logically_exclusive \
    -group [get_clocks {clk}]\
-   -group [get_clocks {hk_serial_clk}]\
-   -group [get_clocks {hk_serial_load}]\
-   -group [get_clocks {hkspi_clk}]
+#   -group [get_clocks {hk_serial_clk}]\
+#   -group [get_clocks {hk_serial_load}]\
+#   -group [get_clocks {hkspi_clk}]
 
 # clock <-> hk_serial_clk/load no paths
 # future note: CDC stuff
 # clock <-> hkspi_clk no paths with careful methods (clock is off)
 
 set_propagated_clock [get_clocks {clk}]
-set_propagated_clock [get_clocks {hk_serial_clk}]
-set_propagated_clock [get_clocks {hk_serial_load}]
-set_propagated_clock [get_clocks {hkspi_clk}]
+#set_propagated_clock [get_clocks {hk_serial_clk}]
+#set_propagated_clock [get_clocks {hk_serial_load}]
+#set_propagated_clock [get_clocks {hkspi_clk}]
 
 ## INPUT/OUTPUT DELAYS
 set input_delay_value 4
