@@ -60,8 +60,8 @@ if {\
     } else {
       #read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/$::env(DESIGN).sdc
       #read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/caravel_stanford.sdc
-      read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/caravel.sdc
-      read_sdc $::env(UPRJ_ROOT)/user_project_wrapper_2.sdc
+      read_sdc $::env(UPRJ_ROOT)/sdc/caravel.sdc
+      read_sdc $::env(UPRJ_ROOT)/sdc/user_project_wrapper_2.sdc
     }
 
     # Reading parasitics based on the RC corner specified
