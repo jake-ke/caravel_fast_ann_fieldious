@@ -14,6 +14,7 @@ if {\
       $::env(PDK_ROOT)/$::env(PDK)/libs.ref/sky130_fd_io/lib/sky130_ef_io__vssd_lvc_clamped3_pad_tt_025C_1v80_3v30.lib \
       $::env(PDK_ROOT)/$::env(PDK)/libs.ref/sky130_fd_io/lib/sky130_ef_io__vccd_lvc_clamped3_pad_tt_025C_1v80_3v30_3v30.lib \
       $::env(PDK_ROOT)/$::env(PDK)/libs.ref/sky130_fd_io/lib/sky130_ef_io__vssd_lvc_clamped_pad_tt_025C_1v80_3v30.lib \
+      $::env(UPRJ_ROOT)/lib/user_proj_example.lib \
       "
     } elseif {$::env(PROC_CORNER) == "f"} {
       set link_path "* $::env(PT_LIB_ROOT)/scs130hd_ff_1.95v_-40C.lib \
@@ -46,8 +47,10 @@ if {\
     set search_path "$::env(CARAVEL_ROOT)/verilog/gl $::env(MCW_ROOT)/verilog/gl $::env(UPRJ_ROOT)/verilog/gl $::env(PT_LIB_ROOT)"
     puts "list of verilog files:"
     foreach verilog "[glob $::env(CARAVEL_ROOT)/verilog/gl/*.v] [glob $::env(MCW_ROOT)/verilog/gl/*.v] [glob $::env(UPRJ_ROOT)/verilog/gl/*.v]" {
-        puts $verilog
-        read_verilog $verilog
+        if {![string match __* $verilog]} {
+		puts $verilog
+        	read_verilog $verilog
+	}
     }
 
     current_design $::env(DESIGN)
@@ -57,17 +60,20 @@ if {\
     if {$::env(DESIGN) == "mgmt_core_wrapper" | $::env(DESIGN) == "RAM256" | $::env(DESIGN) == "RAM128"} {
       read_sdc $::env(MCW_ROOT)/signoff/$::env(DESIGN)/$::env(DESIGN).sdc
     } else {
-      read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/$::env(DESIGN).sdc
+      #read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/$::env(DESIGN).sdc
+      #read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/caravel_stanford.sdc
+      read_sdc $::env(CARAVEL_ROOT)/signoff/$::env(DESIGN)/caravel.sdc
+      read_sdc $::env(UPRJ_ROOT)/user_project_wrapper_2.sdc
     }
 
     # Reading parasitics based on the RC corner specified
     proc read_spefs {design rc_corner} {
       if {$design == "caravel"} {
         set spef_mapping(flash_clkrst_buffers)                     $::env(CARAVEL_ROOT)/signoff/buff_flash_clkrst/openlane-signoff/buff_flash_clkrst.${rc_corner}.spef
-        set spef_mapping(mprj)                                     $::env(UPRJ_ROOT)/signoff/user_project_wrapper/openlane-signoff/spef/user_project_wrapper.${rc_corner}.spef
+        set spef_mapping(mprj)                                     $::env(UPRJ_ROOT)/spef/user_project_wrapper.spef
        
         # add your module name instantiated in user_project_wrapper here
-        # set spef_mapping(mprj/<instance name>)                     $::env(UPRJ_ROOT)/signoff/<design name>/openlane-signoff/spef/<design name>.${rc_corner}.spef
+        #set spef_mapping(mprj/mprj)                   		   $::env(UPRJ_ROOT)/spef/user_proj_example.spef
 
         set spef_mapping(rstb_level)                               $::env(CARAVEL_ROOT)/signoff/xres_buf/openlane-signoff/xres_buf.${rc_corner}.spef
         set spef_mapping(padframe)                                 $::env(CARAVEL_ROOT)/signoff/chip_io/chip_io.${rc_corner}.spef
