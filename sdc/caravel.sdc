@@ -13,7 +13,8 @@ create_clock -name clk -period 25 [get_ports {clock}]
 set_clock_groups \
    -name clock_group \
    -logically_exclusive \
-   -group [get_clocks {clk}]\
+   -group [get_clocks {clk}]
+#   -group [get_clocks {clk}]\
 #   -group [get_clocks {hk_serial_clk}]\
 #   -group [get_clocks {hk_serial_load}]\
 #   -group [get_clocks {hkspi_clk}]
@@ -38,8 +39,8 @@ set_input_delay $input_delay_value  -clock [get_clocks {clk}] -add_delay [get_po
 
 #set_input_delay $input_delay_value  -clock [get_clocks {clk}] -add_delay [get_ports {mprj_io[1]}]
 
-set_input_delay $input_delay_value  -clock [get_clocks {hkspi_clk}] -add_delay [get_ports {mprj_io[2]}]
-set_input_delay $input_delay_value  -clock [get_clocks {hkspi_clk}] -add_delay [get_ports {mprj_io[3]}]
+#set_input_delay $input_delay_value  -clock [get_clocks {hkspi_clk}] -add_delay [get_ports {mprj_io[2]}]
+#set_input_delay $input_delay_value  -clock [get_clocks {hkspi_clk}] -add_delay [get_ports {mprj_io[3]}]
 
 #set_input_delay $input_delay_value  -clock [get_clocks {clk}] -add_delay [get_ports {mprj_io[4]}]
 
