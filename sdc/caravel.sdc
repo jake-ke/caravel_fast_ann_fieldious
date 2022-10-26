@@ -3,7 +3,8 @@
 ### Date: 14/10/2022
 
 ## MASTER CLOCKS
-create_clock -name clk -period 25 [get_ports {clock}] 
+# create_clock -name clk -period 25 [get_ports {clock}]
+create_clock -name clk -period 42 [get_ports {clock}]
 
 #create_clock -name hkspi_clk -period 100 [get_pins {housekeeping/mgmt_gpio_in[4]} ]
 #create_clock -name hk_serial_clk -period 50 [get_pins {housekeeping/serial_clock}]
