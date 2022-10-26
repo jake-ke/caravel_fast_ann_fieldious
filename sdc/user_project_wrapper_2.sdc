@@ -29,12 +29,18 @@ set_clock_groups \
 
 ## INPUT/OUTPUT DELAYS
 set input_delay_value 3
+
+# is the io_clock (120MHz) derived and has a phase delay relative to core clock from caravel (40MHz)
+
 set output_delay_value [expr 25 * $::env(IO_PCT)]
 puts "\[INFO\]: Setting output delay to: $output_delay_value"
 puts "\[INFO\]: Setting input delay to: $input_delay_value"
 
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {gpio}]
-set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[0]}]
+
+#set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[0]}]
+#this delay should be zero?
+
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[1]}]
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[2]}]
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[3]}]
@@ -87,11 +93,17 @@ set_output_delay 3 -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io
 
 ## FALSE PATHS (ASYNCHRONOUS INPUTS)
 #set_false_path -from [get_ports {resetb}]
+
+# set false path to logic analyzer pins which are not used in the design
+set_false_path -through [get_ports mprj/la_data_out[*]]
+
 # set_false_path -to [get_ports mprj_io[*]]
 # set_false_path -from [get_ports gpio]
 
-# TODO set this as parameter
 #set cap_load [expr $::env(SYNTH_CAP_LOAD) / 1000.0]
+#depends on packaging of part (QFN) = 1.1 + < 1 + board
+set cap_load 5
+
 #puts "\[INFO\]: Setting load to: $cap_load"
 #set_load  $cap_load [all_outputs]
 
