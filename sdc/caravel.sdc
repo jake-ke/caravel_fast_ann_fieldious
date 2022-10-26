@@ -171,9 +171,9 @@ set_false_path -from [get_ports gpio]
 # set_timing_derate -late 1
 
 # TODO set this as parameter
-set cap_load 10
-puts "\[INFO\]: Setting load to: $cap_load"
-set_load $cap_load [all_outputs]
+#set cap_load 10
+#puts "\[INFO\]: Setting load to: $cap_load"
+#set_load $cap_load [all_outputs]
 
 #add input transition for the inputs pins
 set_input_transition 2 [all_inputs]

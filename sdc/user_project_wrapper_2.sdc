@@ -95,7 +95,7 @@ set_output_delay 3 -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io
 #set_false_path -from [get_ports {resetb}]
 
 # set false path to logic analyzer pins which are not used in the design
-set_false_path -through [get_ports mprj/la_data_out[*]]
+set_false_path -through [get_pins mprj/la_data_out[*]]
 
 # set_false_path -to [get_ports mprj_io[*]]
 # set_false_path -from [get_ports gpio]
@@ -104,8 +104,8 @@ set_false_path -through [get_ports mprj/la_data_out[*]]
 #depends on packaging of part (QFN) = 1.1 + < 1 + board
 set cap_load 5
 
-#puts "\[INFO\]: Setting load to: $cap_load"
-#set_load  $cap_load [all_outputs]
+puts "\[INFO\]: Setting load to: $cap_load"
+set_load  $cap_load [all_outputs]
 
 #puts "\[INFO\]: Setting timing derate to: [expr {$::env(SYNTH_TIMING_DERATE) * 10}] %"
 #set_timing_derate -early [expr {1-$::env(SYNTH_TIMING_DERATE)}]
