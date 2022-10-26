@@ -12,7 +12,8 @@ create_clock -name "io_clock" -period 14 [get_ports {mprj_io[0]}]
 
 # user_clock2: period 8.33
 # create_generated_clock -name "user_clock2" -source "clk" -multiply_by 3 -duty_cycle 50 mprj/user_clock2
-create_clock -name "user_clock2" -period 8.33 [get_pins {mprj/user_clock2}]
+#create_clock -name "user_clock2" -period 8.33 [get_pins {mprj/user_clock2}]
+create_clock -name "user_clock2" -period 14 [get_pins {mprj/user_clock2}]
 
 set_propagated_clock [get_clocks {io_clock}]
 set_propagated_clock [get_clocks {user_clock2}]
@@ -40,7 +41,7 @@ puts "\[INFO\]: Setting input delay to: $input_delay_value"
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {gpio}]
 
 #set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[0]}]
-#this delay should be zero?
+#this delay should be zero for the io_clock input pin
 
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[1]}]
 set_input_delay $input_delay_value  -clock [get_clocks {io_clock}] -add_delay [get_ports {mprj_io[2]}]
@@ -101,9 +102,9 @@ set_false_path -through [get_pins mprj/la_data_out[*]]
 # set_false_path -to [get_ports mprj_io[*]]
 # set_false_path -from [get_ports gpio]
 
-#set cap_load [expr $::env(SYNTH_CAP_LOAD) / 1000.0]
-#depends on packaging of part (QFN) = 1.1 + < 1 + board
-set cap_load 5
+# set cap_load [expr $::env(SYNTH_CAP_LOAD) / 1000.0]
+# total capacitance load = 1.1pF caravel QFN pkg + 3pF pcb + 5pF fpga
+set cap_load 9
 
 puts "\[INFO\]: Setting load to: $cap_load"
 set_load  $cap_load [all_outputs]
