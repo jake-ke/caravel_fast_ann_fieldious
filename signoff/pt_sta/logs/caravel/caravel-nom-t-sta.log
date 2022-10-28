@@ -332,9 +332,8 @@ list of verilog files:
 /home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/mgmt_core_wrapper.v
 /home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/RAM128.v
 /home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/RAM256.v
-/home/jeffdi/stanford/fast_ann/verilog/gl/user_project_wrapper.v
-/home/jeffdi/stanford/fast_ann/verilog/gl/user_proj_example.v
-/home/jeffdi/stanford/fast_ann/verilog/gl/sky130_sram_1kbyte_1rw1r_32x256_8.v
+/home/jeffdi/stanford/grapevine/verilog/gl/user_project_wrapper.v
+/home/jeffdi/stanford/grapevine/verilog/gl/user_proj_example.v
 Information: current_design won't return any data before link (DES-071)
 Beginning read_lib...
 Using exec: /tools/snps/lc/T-2022.03-SP3/linux64/lc/bin/lc_shell_exec
@@ -5413,274 +5412,54 @@ Warning: Line 171, Cell 'sky130_ef_io__vssd_lvc_clamped_pad', pin 'AMUXBUS_B', T
 Technology library 'sky130_ef_io__vssd_lvc_clamped_pad_tt_025C_1v80_3v30' read successfully
 Beginning read_lib...
 Using exec: /tools/snps/lc/T-2022.03-SP3/linux64/lc/bin/lc_shell_exec
-Reading '/home/jeffdi/stanford/fast_ann/lib/user_proj_example.lib' ...
-Warning: Line 4219, Cell 'user_proj_example', pin 'wbs_ack_o', There is an extra timing arc between 'wb_clk_i' and 
+Reading '/home/jeffdi/stanford/grapevine/lib/user_proj_example.lib' ...
+Warning: Line 5507, Cell 'user_proj_example', pin 'wbs_ack_o', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_ack_o' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4320, Cell 'user_proj_example', pin 'wbs_dat_o[31]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[31]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4417, Cell 'user_proj_example', pin 'wbs_dat_o[30]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[30]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4514, Cell 'user_proj_example', pin 'wbs_dat_o[29]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[29]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4611, Cell 'user_proj_example', pin 'wbs_dat_o[28]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[28]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4708, Cell 'user_proj_example', pin 'wbs_dat_o[27]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[27]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4805, Cell 'user_proj_example', pin 'wbs_dat_o[26]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[26]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4902, Cell 'user_proj_example', pin 'wbs_dat_o[25]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[25]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 4999, Cell 'user_proj_example', pin 'wbs_dat_o[24]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[24]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5096, Cell 'user_proj_example', pin 'wbs_dat_o[23]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[23]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5193, Cell 'user_proj_example', pin 'wbs_dat_o[22]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[22]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5290, Cell 'user_proj_example', pin 'wbs_dat_o[21]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[21]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5387, Cell 'user_proj_example', pin 'wbs_dat_o[20]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[20]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5484, Cell 'user_proj_example', pin 'wbs_dat_o[19]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[19]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5581, Cell 'user_proj_example', pin 'wbs_dat_o[18]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[18]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5678, Cell 'user_proj_example', pin 'wbs_dat_o[17]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[17]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5775, Cell 'user_proj_example', pin 'wbs_dat_o[16]', There is an extra timing arc between 'wb_clk_i' and 
-	'wbs_dat_o[16]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5872, Cell 'user_proj_example', pin 'wbs_dat_o[15]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 5914, Cell 'user_proj_example', pin 'wbs_dat_o[15]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[15]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 5969, Cell 'user_proj_example', pin 'wbs_dat_o[14]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6011, Cell 'user_proj_example', pin 'wbs_dat_o[14]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[14]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6066, Cell 'user_proj_example', pin 'wbs_dat_o[13]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6108, Cell 'user_proj_example', pin 'wbs_dat_o[13]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[13]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6163, Cell 'user_proj_example', pin 'wbs_dat_o[12]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6205, Cell 'user_proj_example', pin 'wbs_dat_o[12]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[12]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6260, Cell 'user_proj_example', pin 'wbs_dat_o[11]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6302, Cell 'user_proj_example', pin 'wbs_dat_o[11]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[11]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6357, Cell 'user_proj_example', pin 'wbs_dat_o[10]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6399, Cell 'user_proj_example', pin 'wbs_dat_o[10]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[10]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6454, Cell 'user_proj_example', pin 'wbs_dat_o[9]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6496, Cell 'user_proj_example', pin 'wbs_dat_o[9]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[9]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6551, Cell 'user_proj_example', pin 'wbs_dat_o[8]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6593, Cell 'user_proj_example', pin 'wbs_dat_o[8]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[8]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6648, Cell 'user_proj_example', pin 'wbs_dat_o[7]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6690, Cell 'user_proj_example', pin 'wbs_dat_o[7]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[7]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6745, Cell 'user_proj_example', pin 'wbs_dat_o[6]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6787, Cell 'user_proj_example', pin 'wbs_dat_o[6]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[6]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6842, Cell 'user_proj_example', pin 'wbs_dat_o[5]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6884, Cell 'user_proj_example', pin 'wbs_dat_o[5]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[5]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 6939, Cell 'user_proj_example', pin 'wbs_dat_o[4]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 6981, Cell 'user_proj_example', pin 'wbs_dat_o[4]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[4]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 7036, Cell 'user_proj_example', pin 'wbs_dat_o[3]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 7078, Cell 'user_proj_example', pin 'wbs_dat_o[3]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[3]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 7133, Cell 'user_proj_example', pin 'wbs_dat_o[2]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 7175, Cell 'user_proj_example', pin 'wbs_dat_o[2]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[2]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 7230, Cell 'user_proj_example', pin 'wbs_dat_o[1]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 7272, Cell 'user_proj_example', pin 'wbs_dat_o[1]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[1]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 7327, Cell 'user_proj_example', pin 'wbs_dat_o[0]', There is an extra timing arc between 'wb_clk_i' and 
+Warning: Line 7369, Cell 'user_proj_example', pin 'wbs_dat_o[0]', There is an extra timing arc between 'wb_clk_i' and 
 	'wbs_dat_o[0]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 9680, Cell 'user_proj_example', pin 'la_data_out[40]', There is an extra timing arc between 'io_in[0]' and 
-	'la_data_out[40]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13226, Cell 'user_proj_example', pin 'io_out[37]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[37]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13323, Cell 'user_proj_example', pin 'io_out[36]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[36]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13420, Cell 'user_proj_example', pin 'io_out[35]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[35]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13517, Cell 'user_proj_example', pin 'io_out[34]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[34]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13614, Cell 'user_proj_example', pin 'io_out[33]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[33]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13711, Cell 'user_proj_example', pin 'io_out[32]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[32]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13808, Cell 'user_proj_example', pin 'io_out[31]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[31]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 13905, Cell 'user_proj_example', pin 'io_out[30]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[30]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14002, Cell 'user_proj_example', pin 'io_out[29]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[29]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14099, Cell 'user_proj_example', pin 'io_out[28]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[28]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14196, Cell 'user_proj_example', pin 'io_out[27]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[27]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14293, Cell 'user_proj_example', pin 'io_out[26]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[26]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14414, Cell 'user_proj_example', pin 'io_out[23]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[23]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14511, Cell 'user_proj_example', pin 'io_out[22]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[22]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14608, Cell 'user_proj_example', pin 'io_out[21]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[21]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14705, Cell 'user_proj_example', pin 'io_out[20]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[20]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14802, Cell 'user_proj_example', pin 'io_out[19]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[19]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 14899, Cell 'user_proj_example', pin 'io_out[18]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[18]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 15032, Cell 'user_proj_example', pin 'io_out[14]', There is an extra timing arc between 'io_in[0]' and 
-	'io_out[14]' pins in the 'user_proj_example' cell. (LBDB-75)
-Warning: Line 11576, Cell 'user_proj_example', pin 'io_in[25]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11600, Cell 'user_proj_example', pin 'io_in[25]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11696, Cell 'user_proj_example', pin 'io_in[17]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11720, Cell 'user_proj_example', pin 'io_in[17]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11753, Cell 'user_proj_example', pin 'io_in[16]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11820, Cell 'user_proj_example', pin 'io_in[16]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11896, Cell 'user_proj_example', pin 'io_in[15]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11920, Cell 'user_proj_example', pin 'io_in[15]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 11962, Cell 'user_proj_example', pin 'io_in[13]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12029, Cell 'user_proj_example', pin 'io_in[13]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12105, Cell 'user_proj_example', pin 'io_in[12]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12172, Cell 'user_proj_example', pin 'io_in[12]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12248, Cell 'user_proj_example', pin 'io_in[11]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12272, Cell 'user_proj_example', pin 'io_in[11]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12305, Cell 'user_proj_example', pin 'io_in[10]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12329, Cell 'user_proj_example', pin 'io_in[10]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12362, Cell 'user_proj_example', pin 'io_in[9]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12429, Cell 'user_proj_example', pin 'io_in[9]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12505, Cell 'user_proj_example', pin 'io_in[8]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12529, Cell 'user_proj_example', pin 'io_in[8]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12562, Cell 'user_proj_example', pin 'io_in[7]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12629, Cell 'user_proj_example', pin 'io_in[7]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12705, Cell 'user_proj_example', pin 'io_in[6]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12729, Cell 'user_proj_example', pin 'io_in[6]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12762, Cell 'user_proj_example', pin 'io_in[5]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12786, Cell 'user_proj_example', pin 'io_in[5]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12819, Cell 'user_proj_example', pin 'io_in[4]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12843, Cell 'user_proj_example', pin 'io_in[4]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12876, Cell 'user_proj_example', pin 'io_in[3]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 12943, Cell 'user_proj_example', pin 'io_in[3]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13019, Cell 'user_proj_example', pin 'io_in[2]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13043, Cell 'user_proj_example', pin 'io_in[2]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13076, Cell 'user_proj_example', pin 'io_in[1]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13113, Cell 'user_proj_example', pin 'io_in[1]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13128, Cell 'user_proj_example', pin 'io_in[1]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13165, Cell 'user_proj_example', pin 'io_in[1]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13236, Cell 'user_proj_example', pin 'io_out[37]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13278, Cell 'user_proj_example', pin 'io_out[37]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13333, Cell 'user_proj_example', pin 'io_out[36]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13375, Cell 'user_proj_example', pin 'io_out[36]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13430, Cell 'user_proj_example', pin 'io_out[35]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13472, Cell 'user_proj_example', pin 'io_out[35]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13527, Cell 'user_proj_example', pin 'io_out[34]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13569, Cell 'user_proj_example', pin 'io_out[34]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13624, Cell 'user_proj_example', pin 'io_out[33]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13666, Cell 'user_proj_example', pin 'io_out[33]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13721, Cell 'user_proj_example', pin 'io_out[32]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13763, Cell 'user_proj_example', pin 'io_out[32]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13818, Cell 'user_proj_example', pin 'io_out[31]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13860, Cell 'user_proj_example', pin 'io_out[31]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13915, Cell 'user_proj_example', pin 'io_out[30]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 13957, Cell 'user_proj_example', pin 'io_out[30]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14012, Cell 'user_proj_example', pin 'io_out[29]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14054, Cell 'user_proj_example', pin 'io_out[29]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14109, Cell 'user_proj_example', pin 'io_out[28]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14151, Cell 'user_proj_example', pin 'io_out[28]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14206, Cell 'user_proj_example', pin 'io_out[27]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14248, Cell 'user_proj_example', pin 'io_out[27]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14303, Cell 'user_proj_example', pin 'io_out[26]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14345, Cell 'user_proj_example', pin 'io_out[26]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14424, Cell 'user_proj_example', pin 'io_out[23]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14466, Cell 'user_proj_example', pin 'io_out[23]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14521, Cell 'user_proj_example', pin 'io_out[22]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14563, Cell 'user_proj_example', pin 'io_out[22]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14618, Cell 'user_proj_example', pin 'io_out[21]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14660, Cell 'user_proj_example', pin 'io_out[21]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14715, Cell 'user_proj_example', pin 'io_out[20]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14757, Cell 'user_proj_example', pin 'io_out[20]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14812, Cell 'user_proj_example', pin 'io_out[19]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14854, Cell 'user_proj_example', pin 'io_out[19]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14909, Cell 'user_proj_example', pin 'io_out[18]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 14951, Cell 'user_proj_example', pin 'io_out[18]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 15042, Cell 'user_proj_example', pin 'io_out[14]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
-Warning: Line 15084, Cell 'user_proj_example', pin 'io_out[14]', There is a sequential timing arc with the
-	io_in[0] non-clock pin for a related_pin attribute. (LBDB-30)
 Technology library 'user_proj_example' read successfully
-Loading verilog file '/home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/RAM256.v'
-Loading verilog file '/home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/mgmt_core_wrapper.v'
-Loading verilog file '/home/jeffdi/stanford/fast_ann/verilog/gl/user_proj_example.v'
-Loading db file '/home/jeffdi/stanford/pt_libs/scs130hd_tt_1.80v_25C.lib'
 Loading verilog file '/home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/RAM128.v'
+Loading db file '/home/jeffdi/stanford/pt_libs/scs130hd_tt_1.80v_25C.lib'
+Loading verilog file '/home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/mgmt_core_wrapper.v'
+Loading verilog file '/home/jeffdi/stanford/caravel/mgmt_core_wrapper/verilog/gl/RAM256.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/mgmt_protect.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/housekeeping.v'
+Loading verilog file '/home/jeffdi/stanford/grapevine/verilog/gl/user_proj_example.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravel.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravel-signoff.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravel-eco.v'
-Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravan.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravan-signoff.v'
+Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravan.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/caravel_clocking.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/digital_pll.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/chip_io.v'
@@ -5693,7 +5472,7 @@ Error: Expected '(' but found '['
 	at line 1046 in '/home/jeffdi/stanford/caravel/verilog/gl/gpio_signal_buffering_alt.v'. (SVR-4)
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/spare_logic_block.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/user_id_programming.v'
-Loading verilog file '/home/jeffdi/stanford/fast_ann/verilog/gl/user_project_wrapper.v'
+Loading verilog file '/home/jeffdi/stanford/grapevine/verilog/gl/user_project_wrapper.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/buff_flash_clkrst.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/gpio_defaults_block_1803.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/gpio_defaults_block_0403.v'
@@ -5703,9 +5482,6 @@ Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/mprj2_logic_high.
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/__user_analog_project_wrapper.v'
 Error: Expected ',' or ')' but found 'U'
 	at line 29 in '/home/jeffdi/stanford/caravel/verilog/gl/__user_analog_project_wrapper.v'. (SVR-4)
-Loading verilog file '/home/jeffdi/stanford/fast_ann/verilog/gl/sky130_sram_1kbyte_1rw1r_32x256_8.v'
-Error: Expected ',' or ')' but found 'U'
-	at line 7 in '/home/jeffdi/stanford/fast_ann/verilog/gl/sky130_sram_1kbyte_1rw1r_32x256_8.v'. (SVR-4)
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/__user_project_wrapper.v'
 Error: Expected '(' but found '#'
 	at line 32 in '/home/jeffdi/stanford/caravel/verilog/gl/__user_project_wrapper.v'. (SVR-4)
@@ -5713,29 +5489,29 @@ Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/gpio_logic_high.v
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/xres_buf.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/constant_block.v'
 Loading verilog file '/home/jeffdi/stanford/caravel/verilog/gl/mgmt_protect_hv.v'
-Loading db file '/tmp/_pt1rDl3FR6/1.db'
+Loading db file '/tmp/_pt1r1Ypv8y/1.db'
 Loading db file '/home/jeffdi/stanford/pt_libs/scs130hvl_tt_3.3v_25C.lib'
-Loading db file '/tmp/_pt1rBPHqqV/1.db'
+Loading db file '/tmp/_pt1r1gtByN/1.db'
 Loading db file '/home/jeffdi/stanford/pt_libs/scs130hvl_tt_3.3v_lowhv_3.3v_lv_1.8v_25C.lib'
-Loading db file '/tmp/_pt1rj1nblZ/1.db'
+Loading db file '/tmp/_pt1rL0i8gh/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_fd_io__top_xres4v2_tt_tt_025C_1v80_3v30.lib'
-Loading db file '/tmp/_pt1rDIhGP8/1.db'
+Loading db file '/tmp/_pt1rZzxhAQ/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__gpiov2_pad_tt_tt_025C_1v80_3v30.lib'
-Loading db file '/tmp/_pt1rv6iicm/1.db'
+Loading db file '/tmp/_pt1r7YC8Mt/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vccd_lvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib'
-Loading db file '/tmp/_pt1rX0ZRLD/1.db'
+Loading db file '/tmp/_pt1rzIVpdb/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vdda_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib'
-Loading db file '/tmp/_pt1rR8E1hZ/1.db'
+Loading db file '/tmp/_pt1rlHAHzW/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vssa_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib'
-Loading db file '/tmp/_pt1r12dixo/1.db'
+Loading db file '/tmp/_pt1r12SaEL/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vssd_lvc_clamped3_pad_tt_025C_1v80_3v30.lib'
-Loading db file '/tmp/_pt1rJIgiwR/1.db'
+Loading db file '/tmp/_pt1rfvpYqE/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vccd_lvc_clamped3_pad_tt_025C_1v80_3v30_3v30.lib'
-Loading db file '/tmp/_pt1rZFeSeo/1.db'
+Loading db file '/tmp/_pt1rhgzGVA/1.db'
 Loading db file '/home/jeffdi/stanford/pdks/sky130A/libs.ref/sky130_fd_io/lib/sky130_ef_io__vssd_lvc_clamped_pad_tt_025C_1v80_3v30.lib'
-Loading db file '/tmp/_pt1rNp73GY/1.db'
-Loading db file '/home/jeffdi/stanford/fast_ann/lib/user_proj_example.lib'
-Loading db file '/tmp/_pt1rT4uTRC/1.db'
+Loading db file '/tmp/_pt1rLdSm8A/1.db'
+Loading db file '/home/jeffdi/stanford/grapevine/lib/user_proj_example.lib'
+Loading db file '/tmp/_pt1rrejU2E/1.db'
 Warning: Ignoring caravel in verilog file /home/jeffdi/stanford/caravel/verilog/gl/caravel.v, as another module with same name is read already. (LNK-067)
 Warning: Ignoring caravan in verilog file /home/jeffdi/stanford/caravel/verilog/gl/caravan.v, as another module with same name is read already. (LNK-067)
 Warning: Ignoring caravel in verilog file /home/jeffdi/stanford/caravel/verilog/gl/caravel-signoff.v, as another module with same name is read already. (LNK-067)
@@ -5770,16 +5546,10 @@ Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_2' in 'caravel'. 
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_1' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__tapvpwrvgnd_1' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'simple_por' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
-Warning: Unable to resolve reference to 'sky130_sram_1kbyte_1rw1r_32x256_8' in 'caravel'. (LNK-005)
+Warning: Unable to resolve reference to 'PE_right' in 'caravel'. (LNK-005)
+Warning: Unable to resolve reference to 'PE_down' in 'caravel'. (LNK-005)
+Warning: Unable to resolve reference to 'PE_up' in 'caravel'. (LNK-005)
+Warning: Unable to resolve reference to 'PE_left' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_2' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_4' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_1' in 'caravel'. (LNK-005)
@@ -5806,28 +5576,37 @@ Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_2' in 'caravel'. 
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__fill_1' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_fd_sc_hd__tapvpwrvgnd_1' in 'caravel'. (LNK-005)
 Warning: Unable to resolve reference to 'sky130_ef_sc_hd__decap_12' in 'caravel'. (LNK-005)
-Information: Creating black box for mprj/mprj/acc_inst/k_best_array_inst/loop_best_array_gen_0__best_dist_array_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/k_best_array_inst/loop_best_array_gen_0__best_dist_array_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/qp_mem_inst/ram_patch_inst/loop_depth_gen_1__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/qp_mem_inst/ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/qp_mem_inst/ram_patch_inst/loop_depth_gen_1__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/qp_mem_inst/ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_0__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_0__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_1__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_1__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_2__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_2__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_3__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_3__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_4__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_4__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_5__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_5__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_6__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_6__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_7__ram_patch_inst/loop_depth_gen_0__loop_width_gen_0__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
-Information: Creating black box for mprj/mprj/acc_inst/leaf_mem_inst/loop_ram_patch_gen_7__ram_patch_inst/loop_depth_gen_0__loop_width_gen_1__genblk1_sram_macro/sky130_sram_1kbyte_1rw1r_32x256_8... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/r/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrl/PE_down... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrr/PE_up... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrll/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrlr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrll/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrlr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrrl/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrrrr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlll/PE_down... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rllr/PE_up... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrrl/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrrr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rll/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrl/PE_down... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlrr/PE_up... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrl/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrlll/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrllr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rllll/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rlllr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rl/PE_down... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rr/PE_up... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrlrl/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrlrr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rllrl/PE_right... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rllrr/PE_left... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrll/PE_down... (LNK-043)
+Information: Creating black box for mprj/mprj/i_Top/rrlr/PE_up... (LNK-043)
 Information: Creating black box for padframe/mgmt_vssio_hvclamp_pad[0]/sky130_ef_io__vssio_hvc_clamped_pad... (LNK-043)
 Information: Creating black box for padframe/mgmt_vddio_hvclamp_pad[0]/sky130_ef_io__vddio_hvc_clamped_pad... (LNK-043)
 Information: Creating black box for padframe/mgmt_vssio_hvclamp_pad[1]/sky130_ef_io__vssio_hvc_clamped_pad... (LNK-043)
@@ -5897,17 +5676,8 @@ Information: Creating black box for gpio_control_in_2[8]/FILLER_3_99/sky130_fd_s
 Information: Creating black box for gpio_control_in_2[8]/FILLER_0_95/sky130_fd_sc_hd__fill_1... (LNK-043)
 Information: Creating black box for gpio_control_in_2[8]/FILLER_17_99/sky130_fd_sc_hd__fill_1... (LNK-043)
 Information: Creating black box for gpio_control_in_2[8]/FILLER_13_99/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/FILLER_0_27/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/gpio_logic_high/FILLER_1_11/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/gpio_logic_high/FILLER_2_7/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/gpio_logic_high/FILLER_0_7/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/gpio_logic_high/FILLER_4_7/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/FILLER_1_34/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/FILLER_0_31/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for gpio_control_in_2[8]/FILLER_12_29/sky130_fd_sc_hd__fill_1... (LNK-043)
-Information: Creating black box for spare_logic[0]/FILLER_2_3/sky130_fd_sc_hd__fill_2... (LNK-043)
-Removed 246362 unconnected cells and blackboxes.
-Information: Removing 583 unneeded designs..... (LNK-034)
+Removed 246275 unconnected cells and blackboxes.
+Information: Removing 79 unneeded designs..... (LNK-034)
 Information: Module 'gpio_defaults_block_1803' in file '/home/jeffdi/stanford/caravel/verilog/gl/gpio_defaults_block_1803.v' is not used in the current design.  (LNK-039)
 Information: Module 'chip_io_alt' in file '/home/jeffdi/stanford/caravel/verilog/gl/chip_io_alt.v' is not used in the current design.  (LNK-039)
 Information: Module 'gpio_defaults_block_0403' in file '/home/jeffdi/stanford/caravel/verilog/gl/gpio_defaults_block_0403.v' is not used in the current design.  (LNK-039)
@@ -5918,130 +5688,29 @@ Information: Module 'caravan' in file '/home/jeffdi/stanford/caravel/verilog/gl/
 Information: Module 'caravel' in file '/home/jeffdi/stanford/caravel/verilog/gl/caravel-signoff.v' is not used in the current design.  (LNK-039)
 Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
 Design 'caravel' was successfully linked.
-Information: There are 279125 leaf cells, ports, hiers and 275418 nets in the design (LNK-047)
+Information: There are 124879 leaf cells, ports, hiers and 81922 nets in the design (LNK-047)
 
 Reading SDC version 2.1...
 [INFO]: Setting output delay to: 4
 [INFO]: Setting input delay to: 4
-[INFO]: Setting load to: 10
 1
 
 Reading SDC version 2.1...
-Warning: Creating a clock source on inout port 'mprj_io[0]'. (UITE-123)
-Warning: Creating a clock on internal pin 'mprj/user_clock2'. (UITE-130)
-Warning: Creating 'clock' on a hierarchical pin 'mprj/user_clock2'. (UITE-137)
-[INFO]: Setting output delay to: 5.0
-[INFO]: Setting input delay to: 3
-Warning: Setting input delay on clock port (mprj_io[0]) relative to a clock (io_clock) defined at the same port. Command is ignored. (UITE-489)
-1
+Error: could not open script file "/home/jeffdi/stanford/grapevine/sdc/user_project_wrapper_2.sdc" (CMD-015)
+Error: Errors reading SDC file:
+	.
+	Use error_info for more info. (SDC-5)
+0
 Information: Log for 'read_parasitics command' will be generated in 'parasitics_command.log'. (PARA-107)
 Information: Building multi voltage information for entire design. (MV-022)
 Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Warning: Conflicted logic driving pin padframe/flash_io1_pad/DM[2], setting resolved logic value 1 on pin padframe/flash_io1_pad/DM[2]. (PTE-042)
 Warning: Conflicted logic driving pin padframe/flash_io1_pad/DM[0], setting resolved logic value 0 on pin padframe/flash_io1_pad/DM[0]. (PTE-042)
 Warning: Conflicted logic driving pin padframe/flash_io1_pad/DM[1], setting resolved logic value 1 on pin padframe/flash_io1_pad/DM[1]. (PTE-042)
-Warning: Conflicted logic driving pin padframe/flash_io1_pad/DM[2], setting resolved logic value 1 on pin padframe/flash_io1_pad/DM[2]. (PTE-042)
-Information: A non-unate path in clock network detected. Propagating both inverting and noninverting senses of clock 'io_clock' from pin 'soc/_17244_/X'. (PTE-070)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1519/A2 and mprj/mprj/clockmux_inst/U5_clone_1519/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1519/A2 and mprj/mprj/clockmux_inst/U5_clone_1519/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1519/B2 and mprj/mprj/clockmux_inst/U5_clone_1519/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1519/B2 and mprj/mprj/clockmux_inst/U5_clone_1519/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1519/A2 and mprj/mprj/clockmux_inst/U5_clone_1519/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1519/B2 and mprj/mprj/clockmux_inst/U5_clone_1519/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1519. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_852/A2 and mprj/mprj/usrclockmux_inst/U5_clone_852/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_852. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_852/B2 and mprj/mprj/usrclockmux_inst/U5_clone_852/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_852. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_852/A2 and mprj/mprj/usrclockmux_inst/U5_clone_852/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_852. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_852/B2 and mprj/mprj/usrclockmux_inst/U5_clone_852/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_852. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_892/A2 and mprj/mprj/usrclockmux_inst/U5_clone_892/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_892. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_892/B2 and mprj/mprj/usrclockmux_inst/U5_clone_892/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_892. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_892/A2 and mprj/mprj/usrclockmux_inst/U5_clone_892/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_892. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_892/B2 and mprj/mprj/usrclockmux_inst/U5_clone_892/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_892. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_812/A2 and mprj/mprj/usrclockmux_inst/U5_clone_812/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_812. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_812/B2 and mprj/mprj/usrclockmux_inst/U5_clone_812/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_812. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_812/A2 and mprj/mprj/usrclockmux_inst/U5_clone_812/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_812. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_812/B2 and mprj/mprj/usrclockmux_inst/U5_clone_812/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_812. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1607/A2 and mprj/mprj/clockmux_inst/U5_clone_1607/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1607/A2 and mprj/mprj/clockmux_inst/U5_clone_1607/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1607/B2 and mprj/mprj/clockmux_inst/U5_clone_1607/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1607/B2 and mprj/mprj/clockmux_inst/U5_clone_1607/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1607/A2 and mprj/mprj/clockmux_inst/U5_clone_1607/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1607/B2 and mprj/mprj/clockmux_inst/U5_clone_1607/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1607. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1469/A2 and mprj/mprj/clockmux_inst/U5_clone_1469/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1469/A2 and mprj/mprj/clockmux_inst/U5_clone_1469/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1469/B2 and mprj/mprj/clockmux_inst/U5_clone_1469/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1469/B2 and mprj/mprj/clockmux_inst/U5_clone_1469/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1469/A2 and mprj/mprj/clockmux_inst/U5_clone_1469/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1469/B2 and mprj/mprj/clockmux_inst/U5_clone_1469/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1469. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1364/A2 and mprj/mprj/clockmux_inst/U5_clone_1364/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1364/A2 and mprj/mprj/clockmux_inst/U5_clone_1364/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1364/B2 and mprj/mprj/clockmux_inst/U5_clone_1364/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1364/B2 and mprj/mprj/clockmux_inst/U5_clone_1364/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1364/A2 and mprj/mprj/clockmux_inst/U5_clone_1364/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1364/B2 and mprj/mprj/clockmux_inst/U5_clone_1364/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1364. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1612/A2 and mprj/mprj/clockmux_inst/U5_clone_1612/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1612/A2 and mprj/mprj/clockmux_inst/U5_clone_1612/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1612/B2 and mprj/mprj/clockmux_inst/U5_clone_1612/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1612/B2 and mprj/mprj/clockmux_inst/U5_clone_1612/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1612/A2 and mprj/mprj/clockmux_inst/U5_clone_1612/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1612/B2 and mprj/mprj/clockmux_inst/U5_clone_1612/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1612. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_857/A2 and mprj/mprj/usrclockmux_inst/U5_clone_857/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_857. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_857/B2 and mprj/mprj/usrclockmux_inst/U5_clone_857/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_857. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_857/A2 and mprj/mprj/usrclockmux_inst/U5_clone_857/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_857. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_857/B2 and mprj/mprj/usrclockmux_inst/U5_clone_857/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_857. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1584/A2 and mprj/mprj/clockmux_inst/U5_clone_1584/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1584/A2 and mprj/mprj/clockmux_inst/U5_clone_1584/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1584/B2 and mprj/mprj/clockmux_inst/U5_clone_1584/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1584/B2 and mprj/mprj/clockmux_inst/U5_clone_1584/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1584/A2 and mprj/mprj/clockmux_inst/U5_clone_1584/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1584/B2 and mprj/mprj/clockmux_inst/U5_clone_1584/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1584. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1521/A2 and mprj/mprj/clockmux_inst/U5_clone_1521/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1521/A2 and mprj/mprj/clockmux_inst/U5_clone_1521/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1521/B2 and mprj/mprj/clockmux_inst/U5_clone_1521/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1521/B2 and mprj/mprj/clockmux_inst/U5_clone_1521/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1521/A2 and mprj/mprj/clockmux_inst/U5_clone_1521/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1521/B2 and mprj/mprj/clockmux_inst/U5_clone_1521/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1521. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1479/A2 and mprj/mprj/clockmux_inst/U5_clone_1479/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1479/A2 and mprj/mprj/clockmux_inst/U5_clone_1479/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1479/B2 and mprj/mprj/clockmux_inst/U5_clone_1479/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1479/B2 and mprj/mprj/clockmux_inst/U5_clone_1479/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1479/A2 and mprj/mprj/clockmux_inst/U5_clone_1479/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1479/B2 and mprj/mprj/clockmux_inst/U5_clone_1479/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1479. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_427/A2 and mprj/mprj/clockmux_inst/U5_clone_427/A1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_427/A2 and mprj/mprj/clockmux_inst/U5_clone_427/A1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_427/B2 and mprj/mprj/clockmux_inst/U5_clone_427/A1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_427/B2 and mprj/mprj/clockmux_inst/U5_clone_427/A1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_427/A2 and mprj/mprj/clockmux_inst/U5_clone_427/B1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_427/B2 and mprj/mprj/clockmux_inst/U5_clone_427/B1 of cell mprj/mprj/clockmux_inst/U5_clone_427. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_830/A2 and mprj/mprj/usrclockmux_inst/U5_clone_830/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_830. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_830/B2 and mprj/mprj/usrclockmux_inst/U5_clone_830/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_830. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_830/A2 and mprj/mprj/usrclockmux_inst/U5_clone_830/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_830. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_830/B2 and mprj/mprj/usrclockmux_inst/U5_clone_830/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_830. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_819/A2 and mprj/mprj/usrclockmux_inst/U5_clone_819/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_819. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_819/B2 and mprj/mprj/usrclockmux_inst/U5_clone_819/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_819. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_819/A2 and mprj/mprj/usrclockmux_inst/U5_clone_819/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_819. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_819/B2 and mprj/mprj/usrclockmux_inst/U5_clone_819/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_819. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1424/A2 and mprj/mprj/clockmux_inst/U5_clone_1424/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1424/A2 and mprj/mprj/clockmux_inst/U5_clone_1424/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1424/B2 and mprj/mprj/clockmux_inst/U5_clone_1424/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1424/B2 and mprj/mprj/clockmux_inst/U5_clone_1424/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1424/A2 and mprj/mprj/clockmux_inst/U5_clone_1424/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1424/B2 and mprj/mprj/clockmux_inst/U5_clone_1424/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1424. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1620/A2 and mprj/mprj/clockmux_inst/U5_clone_1620/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1620/A2 and mprj/mprj/clockmux_inst/U5_clone_1620/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1620/B2 and mprj/mprj/clockmux_inst/U5_clone_1620/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1620/B2 and mprj/mprj/clockmux_inst/U5_clone_1620/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1620/A2 and mprj/mprj/clockmux_inst/U5_clone_1620/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1620/B2 and mprj/mprj/clockmux_inst/U5_clone_1620/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1620. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1369/A2 and mprj/mprj/clockmux_inst/U5_clone_1369/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1369/A2 and mprj/mprj/clockmux_inst/U5_clone_1369/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/clockmux_inst/U5_clone_1369/B2 and mprj/mprj/clockmux_inst/U5_clone_1369/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/clockmux_inst/U5_clone_1369/B2 and mprj/mprj/clockmux_inst/U5_clone_1369/A1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1369/A2 and mprj/mprj/clockmux_inst/U5_clone_1369/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock clk at pins mprj/mprj/clockmux_inst/U5_clone_1369/B2 and mprj/mprj/clockmux_inst/U5_clone_1369/B1 of cell mprj/mprj/clockmux_inst/U5_clone_1369. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_864/A2 and mprj/mprj/usrclockmux_inst/U5_clone_864/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_864. (PTE-060)
-Warning: No clock-gating check is inferred for clock io_clock at pins mprj/mprj/usrclockmux_inst/U5_clone_864/B2 and mprj/mprj/usrclockmux_inst/U5_clone_864/A1 of cell mprj/mprj/usrclockmux_inst/U5_clone_864. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_864/A2 and mprj/mprj/usrclockmux_inst/U5_clone_864/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_864. (PTE-060)
-Warning: No clock-gating check is inferred for clock user_clock2 at pins mprj/mprj/usrclockmux_inst/U5_clone_864/B2 and mprj/mprj/usrclockmux_inst/U5_clone_864/B1 of cell mprj/mprj/usrclockmux_inst/U5_clone_864. (PTE-060)
-Information: Inferring 2 clock-gating checks. (PTE-017)
+Warning: No clock-gating check is inferred for clock clk at pins clock_ctrl/_206_/A1 and clock_ctrl/_206_/A0 of cell clock_ctrl/_206_. (PTE-060)
+Warning: No clock-gating check is inferred for clock clk at pins clock_ctrl/_206_/S and clock_ctrl/_206_/A0 of cell clock_ctrl/_206_. (PTE-060)
+Warning: No clock-gating check is inferred for clock clk at pins clock_ctrl/_205_/A1 and clock_ctrl/_205_/A0 of cell clock_ctrl/_205_. (PTE-060)
+Warning: No clock-gating check is inferred for clock clk at pins clock_ctrl/_205_/S and clock_ctrl/_205_/A0 of cell clock_ctrl/_205_. (PTE-060)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/wire1964/A-->X (min rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/wire1964/A-->X (max rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/fanout1676/A-->X (min rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
@@ -6106,11 +5775,9 @@ Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/
 Report : write_sdf /home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/sdf/nom/caravel.tt.sdf
 Design : caravel
 Version: T-2022.03-SP3
-Date   : Mon Oct 24 11:01:45 2022
+Date   : Thu Oct 27 23:39:45 2022
 ****************************************
 
-Warning: Clock 'user_clock2'has source on hierachical pin 'mprj/user_clock2'. Consider moving to: mgmt_buffers/output956/X
- (MEXT-20)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/_32602_/A-->X (min rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/_32602_/A-->X (max rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/wire1964/A-->X (min rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
@@ -6120,27 +5787,28 @@ Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/wire1964/A-->X (min rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Warning: The drive-resistance for the timing arc (sky130_fd_sc_hd__tt_1.80v_25C/sky130_fd_sc_hd__buf_12) soc/wire1964/A-->X (max rising & falling positive_unate) is much less than the network impedance to ground; PrimeTime has adjusted the drive-resistance to improve accuracy. (RC-009)
 Information: For model extraction, min_period and min_pulse_width arcs are extracted at the context slew. (MEXT-105)
-Information: Elapsed time for model extraction: 5 seconds (MEXT-096)
+Information: Elapsed time for model extraction: 2 seconds (MEXT-096)
 Wrote the LIB file /home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/lib/nom/caravel.tt.lib
 Wrote model to '/home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/lib/nom/caravel.tt_lib.db'
 Wrote test design to '/home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/lib/nom/caravel.tt_test.db'
-Information: Elapsed time for lib file writing: 0 seconds (MEXT-096)
+Information: Elapsed time for lib file writing: 1 seconds (MEXT-096)
 Information: Defining new variable 'verilog'. (CMD-041)
 Suppressed Messages Summary:
 Id          Severity      Occurrences   Suppressed
 -------------------------------------------------------------------------------
-PARA-006    Error                1238         1138
+PARA-124    Error               30595        30495
+PARA-006    Error                 967          867
+PARA-044    Error                 133           33
 DB-1        Error                  13           13
-PARA-040    Warning             79867        79330
-PTE-060     Warning              2788         2688
-LNK-043     Information        191290       191190
-SVR-2       Information             4            4
-Total 6 types of messages are suppressed
-Maximum memory usage for this session: 2926.26 MB
-CPU usage for this session: 143 seconds 
-Elapsed time for this session: 55 seconds
-Diagnostics summary: 4 errors, 255 warnings, 119 informationals
+PARA-040    Warning             80267        79830
+LNK-043     Information        191023       190923
+SVR-2       Information             3            3
+Total 7 types of messages are suppressed
+Maximum memory usage for this session: 2908.35 MB
+CPU usage for this session: 78 seconds 
+Elapsed time for this session: 35 seconds
+Diagnostics summary: 6 errors, 146 warnings, 117 informationals
 
 Thank you for using pt_shell!
-STA run Failed!
-There are setup violations. check report: /home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/reports/nom/caravel.tt-global.rpt
+STA run Passed!
+There are max_transition and max_capacitance violations. check report: /home/jeffdi/stanford/fast_ann/signoff/pt_sta/primetime-signoff/reports/nom/caravel.tt-all_viol.rpt
